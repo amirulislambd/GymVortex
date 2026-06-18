@@ -26,7 +26,6 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-[550px] md:min-h-[795px] flex flex-col justify-center items-center overflow-hidden px-margin-mobile md:px-margin-desktop text-center bg-[#0a0a0a]">
-      
       {/* Dynamic Optimized Slider Track Wrapper */}
       <div className="absolute inset-0 z-0">
         {SLIDER_IMAGES.map((src, index) => (
@@ -38,7 +37,7 @@ export default function HeroSection() {
           >
             {/* Dark Tactical Vignette Overlay Filter */}
             <div className="absolute inset-0 bg-black/70 md:bg-[#0a0a0a]/65 mix-blend-multiply z-20" />
-            
+
             {/* Next.js Core Core Engine Image Loader */}
             <Image
               src={src}
@@ -55,12 +54,14 @@ export default function HeroSection() {
       {/* Content Command Grid Overlay */}
       <div className="relative z-20 max-w-4xl animate-slide-up px-4 font-mono">
         <h2 className="text-display-lg md:text-5xl lg:text-6xl font-black uppercase italic tracking-tighter text-[#caf300] mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-          FORGE YOUR <span class="text-white">LIMITS</span>
+          FORGE YOUR <span className="text-white">LIMITS</span>
         </h2>
         <p className="font-sans text-body-lg text-neutral-300 max-w-2xl mx-auto mb-10 leading-relaxed text-sm md:text-base">
-          Industrial athletics for the modern elite. Push through structural barriers with data-driven training and raw intensity. This isn't just fitness; it's high-velocity engineering for the human body.
+          Industrial athletics for the modern elite. Push through structural
+          barriers with data-driven training and raw intensity. This isn't just
+          fitness; it's high-velocity engineering for the human body.
         </p>
-        
+
         {/* Call to Action Controls Interactivity */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto sm:max-w-none">
           <button className="bg-[#caf300] text-black px-10 py-4 text-sm font-black uppercase tracking-wider hover:bg-white transition-all active:scale-95 w-full sm:w-auto">
@@ -82,7 +83,9 @@ export default function HeroSection() {
               onClick={() => setCurrentSlide(index)}
               aria-label={`Jump directly to operation profile layout slide ${index + 1}`}
               className={`h-1.5 transition-all duration-300 focus:outline-none ${
-                isActive ? "w-8 bg-[#caf300]" : "w-4 bg-white/30 hover:bg-white/60"
+                isActive
+                  ? "w-8 bg-[#caf300]"
+                  : "w-4 bg-white/30 hover:bg-white/60"
               }`}
             />
           );
@@ -90,9 +93,13 @@ export default function HeroSection() {
       </div>
 
       {/* Tactical Diagnostics Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce flex flex-col items-center opacity-70 z-30 text-white font-mono pointer-events-none">
-        <span className="text-[10px] uppercase tracking-[0.25em] mb-1.5">Engage Scroll</span>
-        <span className="material-symbols-outlined text-[#caf300] text-xl">expand_more</span>
+      <div className="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce flex-col items-center opacity-70 z-30 text-white font-mono pointer-events-none">
+        <span className="text-[10px] uppercase tracking-[0.25em] mb-1.5">
+          Engage Scroll
+        </span>
+        <span className="material-symbols-outlined text-[#caf300] text-xl">
+          expand_more
+        </span>
       </div>
     </section>
   );
