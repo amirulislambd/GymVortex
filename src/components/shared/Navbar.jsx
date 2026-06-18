@@ -131,23 +131,22 @@ export default function Navbar() {
               LOADING...
             </div>
           ) : user ? (
-            <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-2">
               <div className="flex items-center gap-2 bg-[#1a1a1a]/40 border border-neutral-800/60 p-1 md:pl-2 md:pr-3 md:py-1 rounded-full">
-                <div className="w-8 h-8 rounded-full border border-[#caf300] overflow-hidden">
-                  <img
+                <div className="w-8 h-8 rounded-full border-2 border-[#caf300] overflow-hidden">
+                  <Image
+                    width={32}
+                    height={32}
                     src={user.image || "/default-avatar.png"}
-                    alt={user.name || "User"}
+                    alt="Avatar"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="hidden md:inline text-[10px] tracking-wider text-neutral-300 max-w-[90px] truncate uppercase font-bold">
-                  {user.name.split(" ")[0]}
-                </span>
               </div>
 
               <button
                 onClick={handleLogout}
-                className="hidden md:block text-xs font-bold tracking-widest uppercase px-4 py-2 border border-[#caf300] text-[#caf300] bg-transparent hover:bg-[#caf300] hover:text-[#131313] transition-all duration-200 rounded-md"
+                className="hidden md:block text-xs font-bold tracking-widest uppercase px-4 py-2 border-2 border-[#caf300] text-[#caf300] bg-transparent hover:bg-[#caf300] hover:text-[#131313] transition-all duration-200 rounded-md"
               >
                 LOGOUT
               </button>
@@ -211,8 +210,10 @@ export default function Navbar() {
                           {user.email}
                         </span>
                       </div>
-                      <div className="w-9 h-9 rounded-full border border-[#caf300] overflow-hidden shadow-[0_0_10px_rgba(202,243,0,0.15)]">
-                        <img
+                      <div className="w-9 h-9 rounded-full border-2 border-[#caf300] overflow-hidden shadow-[0_0_10px_rgba(202,243,0,0.15)]">
+                        <Image
+                          width={32}
+                          height={32}
                           src={user.image || "/default-avatar.png"}
                           alt="Avatar"
                           className="w-full h-full object-cover"
