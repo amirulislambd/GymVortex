@@ -1,108 +1,153 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
-import { FiMenu, FiX, FiZap } from "react-icons/fi";
+import { useRouter, usePathname } from "next/navigation";
+import {
+  Bars,
+  Xmark,
+  House,
+  BookOpen,
+  Comments,
+  LayoutCells,
+  ArrowRightFromLine,
+} from "@gravity-ui/icons";
+import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
+import Image from "next/image";
 
-const navLinks = [
-  { href: "/", label: "HOME" },
-  { href: "/classes", label: "ALL CLASSES" },
-  { href: "/forum", label: "COMMUNITY FORUM" },
+// HeroUI Elements
+import { Drawer } from "@heroui/react";
+
+const navItems = [
+  { href: "/", label: "HOME", icon: House },
+  { href: "/classes", label: "ALL CLASSES", icon: BookOpen },
+  { href: "/forum", label: "COMMUNITY FORUM", icon: Comments },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-navLinks.map((link) => (
-    console.log(link.href)
-))
-  // পরে এখানে auth থেকে user আসবে
-  const user = null;
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Better-Auth Session handling
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("Logged out successfully");
+            router.push("/login");
+            setIsOpen(false);
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Failed to log out.");
+    }
+  };
 
   return (
-    <header
-      style={{
-        background: "rgba(13, 13, 13, 0.85)",
-        backdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(202, 243, 0, 0.1)",
-      }}
-      className="fixed top-0 left-0 right-0 z-[100] h-16 flex items-center"
-    >
+    <header className="fixed top-0 left-0 right-0 z-[100] h-16 flex items-center bg-[#0d0d0d]/85 backdrop-blur-md border-b border-[#caf300]/10 select-none">
       <div className="w-full max-w-[1440px] mx-auto px-4 md:px-12 flex items-center justify-between">
-
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div
-            style={{ background: "#caf300", color: "#131313" }}
-            className="w-8 h-8 flex items-center justify-center font-black text-sm"
-          >
-            GV
-          </div>
-          <span
-            className="font-black text-lg tracking-widest uppercase"
-            style={{ fontFamily: "Archivo Narrow, sans-serif", color: "#fff" }}
-          >
-            GYM<span style={{ color: "#caf300" }}>VORTEX</span>
-          </span>
-        </Link>
-
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-xs font-bold tracking-[0.15em] uppercase transition-colors duration-200"
-              style={{
-                fontFamily: "JetBrains Mono, monospace",
-                color: "#8f9378",
-              }}
-              onMouseEnter={(e) => (e.target.style.color = "#caf300")}
-              onMouseLeave={(e) => (e.target.style.color = "#8f9378")}
+        {/* Left Side: Hamburger Menu & Logo Container */}
+        <div className="flex items-center gap-3">
+          {/* Hamburger Menu - Visible only when drawer is closed and on mobile devices */}
+          {!isOpen && (
+            <button
+              className="md:hidden text-white hover:text-[#caf300] transition-colors focus:outline-none z-50"
+              onClick={() => setIsOpen(true)}
             >
-              {link.label}
-            </Link>
-          ))}
+              <Bars className="size-6" />
+            </button>
+          )}
 
-          {/* Dashboard only for logged in users */}
+          {/* Logo & Brand Name - Fixed responsiveness to guarantee visibility on md screens */}
+          <Link href="/" className="flex items-center  group">
+            <div className="hidden sm:flex items-center justify-center transition-transform group-hover:scale-105">
+              <Image
+                src="/assets/logo.png"
+                alt="Logo"
+                width={38}
+                height={38}
+                priority
+                className="w-auto h-auto"
+              />
+            </div>
+            <span className="font-black text-base md:text-lg tracking-widest uppercase text-white font-sans">
+              GYM<span className="text-[#caf300]">VORTEX</span>
+            </span>
+          </Link>
+        </div>
+
+        {/* Desktop & Tablet Navigation Links */}
+        <nav className="hidden md:flex items-center gap-6 lg:gap-8 font-mono h-full">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`relative text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 py-5 ${
+                  isActive
+                    ? "text-[#caf300]"
+                    : "text-[#8f9378] hover:text-[#caf300]"
+                }`}
+              >
+                {item.label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#caf300] shadow-[0_0_10px_#caf300]" />
+                )}
+              </Link>
+            );
+          })}
+
+          {/* Conditional Dashboard Route for Authenticated Users */}
           {user && (
             <Link
               href="/dashboard"
-              className="text-xs font-bold tracking-[0.15em] uppercase"
-              style={{ fontFamily: "JetBrains Mono, monospace", color: "#caf300" }}
+              className={`relative text-xs font-bold tracking-[0.15em] uppercase transition-all duration-300 py-5 ${
+                pathname.startsWith("/dashboard")
+                  ? "text-[#caf300]"
+                  : "text-[#caf300]/80 hover:text-white"
+              }`}
             >
               DASHBOARD
+              {pathname.startsWith("/dashboard") && (
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#caf300] shadow-[0_0_10px_#caf300]" />
+              )}
             </Link>
           )}
         </nav>
 
-        {/* Auth Buttons */}
-        <div className="hidden md:flex items-center gap-3">
-          {user ? (
-            <div className="flex items-center gap-3">
-              <div
-                className="w-9 h-9 rounded-full border-2 overflow-hidden"
-                style={{ borderColor: "#caf300" }}
-              >
-                <img
-                  src={user.image || "/default-avatar.png"}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
+        {/* Right Side: Responsive Authentication Action Buttons */}
+        <div className="flex items-center gap-3 font-mono">
+          {isPending ? (
+            <div className="text-xs text-[#8f9378] animate-pulse">
+              LOADING...
+            </div>
+          ) : user ? (
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="flex items-center gap-2 bg-[#1a1a1a]/40 border border-neutral-800/60 p-1 md:pl-2 md:pr-3 md:py-1 rounded-full">
+                <div className="w-8 h-8 rounded-full border border-[#caf300] overflow-hidden">
+                  <img
+                    src={user.image || "/default-avatar.png"}
+                    alt={user.name || "User"}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="hidden md:inline text-[10px] tracking-wider text-neutral-300 max-w-[90px] truncate uppercase font-bold">
+                  {user.name.split(" ")[0]}
+                </span>
               </div>
+
               <button
-                className="text-xs font-bold tracking-widest uppercase px-5 py-2.5 border transition-all duration-200"
-                style={{
-                  fontFamily: "JetBrains Mono, monospace",
-                  borderColor: "#caf300",
-                  color: "#caf300",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#caf300";
-                  e.currentTarget.style.color = "#131313";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = "#caf300";
-                }}
+                onClick={handleLogout}
+                className="hidden md:block text-xs font-bold tracking-widest uppercase px-4 py-2 border border-[#caf300] text-[#caf300] bg-transparent hover:bg-[#caf300] hover:text-[#131313] transition-all duration-200 rounded-md"
               >
                 LOGOUT
               </button>
@@ -111,97 +156,154 @@ navLinks.map((link) => (
             <>
               <Link
                 href="/login"
-                className="text-xs font-bold tracking-widest uppercase px-5 py-2.5 border transition-all duration-200"
-                style={{
-                  fontFamily: "JetBrains Mono, monospace",
-                  borderColor: "rgba(143,147,120,0.3)",
-                  color: "#8f9378",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "#caf300";
-                  e.currentTarget.style.color = "#caf300";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(143,147,120,0.3)";
-                  e.currentTarget.style.color = "#8f9378";
-                }}
+                className="text-[11px] md:text-xs font-bold tracking-widest uppercase px-4 py-2 md:px-5 md:py-2.5 border-2 border-[#8f9378]/30 text-white md:text-[#8f9378] hover:border-[#caf300] hover:text-[#caf300] transition-all duration-200 bg-neutral-900/40 md:bg-transparent rounded-md hover:rounded-md "
               >
                 LOGIN
               </Link>
               <Link
                 href="/register"
-                className="text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all duration-200"
-                style={{
-                  fontFamily: "JetBrains Mono, monospace",
-                  background: "#caf300",
-                  color: "#131313",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#fff";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#caf300";
-                }}
+                className="hidden md:block text-xs font-bold tracking-widest uppercase px-5 py-2.5 bg-[#caf300] text-[#131313] hover:bg-white transition-all duration-200 rounded-md"
               >
-                JOIN NOW
+                REGISTER
               </Link>
             </>
           )}
         </div>
-
-        {/* Mobile Menu Toggle */}
-        <button
-          className="md:hidden text-white"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <FiX size={22} /> : <FiMenu size={22} />}
-        </button>
       </div>
 
-      {/* Mobile Dropdown */}
-      {isOpen && (
-        <div
-          className="md:hidden absolute top-16 left-0 right-0 px-4 py-6 flex flex-col gap-5 border-t"
-          style={{
-            background: "#0e0e0e",
-            borderColor: "rgba(202,243,0,0.1)",
-          }}
-        >
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className="text-xs font-bold tracking-[0.15em] uppercase"
-              style={{ fontFamily: "JetBrains Mono, monospace", color: "#8f9378" }}
-            >
-              {link.label}
-            </Link>
-          ))}
-          {user && (
-            <Link href="/dashboard" onClick={() => setIsOpen(false)}
-              className="text-xs font-bold tracking-widest uppercase"
-              style={{ color: "#caf300", fontFamily: "JetBrains Mono, monospace" }}
-            >
-              DASHBOARD
-            </Link>
-          )}
-          <div className="flex flex-col gap-3 pt-2 border-t" style={{ borderColor: "rgba(202,243,0,0.1)" }}>
-            <Link href="/login" onClick={() => setIsOpen(false)}
-              className="text-center text-xs font-bold tracking-widest uppercase py-3 border"
-              style={{ borderColor: "rgba(143,147,120,0.3)", color: "#8f9378", fontFamily: "JetBrains Mono, monospace" }}
-            >
-              LOGIN
-            </Link>
-            <Link href="/register" onClick={() => setIsOpen(false)}
-              className="text-center text-xs font-bold tracking-widest uppercase py-3"
-              style={{ background: "#caf300", color: "#131313", fontFamily: "JetBrains Mono, monospace" }}
-            >
-              JOIN NOW
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* ================= HEROUI COMPOUND DRAWER SYSTEM ================= */}
+      <Drawer
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        isDismissable={true}
+        classNames={{
+          base: "bg-[#0e0e0e] text-white",
+          wrapper: "z-[150]",
+        }}
+      >
+        {/* Nested Backdrop structure ensuring click-outside-to-close behavior */}
+        <Drawer.Backdrop>
+          <Drawer.Content
+            placement="left"
+            className="bg-[#0e0e0e] text-white max-w-[290px] border-r border-[#caf300]/10 p-0 shadow-[2px_0_20px_rgba(0,0,0,0.8)]"
+          >
+            <Drawer.Dialog className="outline-none h-full flex flex-col justify-between m-0 bg-[#0e0e0e] text-white">
+              {/* Top Drawer Layout: Close Action Trigger & Profile/Brand Info */}
+              <div className="bg-[#0e0e0e]">
+                <div className="flex items-center justify-between border-b border-neutral-900/80 px-4 py-4 h-16 bg-[#0d0d0d]">
+                  {/* Manual Close Button Component */}
+                  <button
+                    className="text-[#caf300] hover:text-white transition-colors focus:outline-none"
+                    onClick={() => setIsOpen(false)}
+                    type="button"
+                  >
+                    <Xmark className="size-6" />
+                  </button>
+
+                  {/* Profile Section inside Drawer Layout */}
+                  {user ? (
+                    <div className="flex items-center gap-2.5 pr-1">
+                      <div className="flex flex-col text-right max-w-[130px]">
+                        <span className="text-[11px] font-black text-white truncate uppercase tracking-wide">
+                          {user.name}
+                        </span>
+                        <span className="text-[9px] text-[#8f9378] truncate">
+                          {user.email}
+                        </span>
+                      </div>
+                      <div className="w-9 h-9 rounded-full border border-[#caf300] overflow-hidden shadow-[0_0_10px_rgba(202,243,0,0.15)]">
+                        <img
+                          src={user.image || "/default-avatar.png"}
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 pr-2">
+                      <span className="font-black text-xs tracking-wider uppercase text-white">
+                        GYM<span className="text-[#caf300]">VORTEX</span>
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Drawer Menu Body Container */}
+                <Drawer.Body className="p-0 scrollbar-none overflow-y-auto bg-[#0e0e0e]">
+                  <div className="flex flex-col gap-1.5 px-3 py-6 bg-[#0e0e0e]">
+                    {navItems.map((item) => {
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={`flex items-center gap-3.5 text-xs font-bold tracking-widest uppercase px-4 py-3.5 rounded-lg transition-all duration-200 ${
+                            isActive
+                              ? "bg-[#caf300]/10 text-[#caf300] border-l-4 border-[#caf300] pl-3 shadow-[inset_0_0_12px_rgba(202,243,0,0.05)]"
+                              : "text-[#8f9378] hover:bg-neutral-900/60 hover:text-[#caf300]"
+                          }`}
+                        >
+                          <item.icon
+                            className={`size-4 ${isActive ? "text-[#caf300]" : "text-[#8f9378]"}`}
+                          />
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+
+                    {/* Conditional Dashboard Link inside mobile layout */}
+                    {user && (
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsOpen(false)}
+                        className={`flex items-center gap-3.5 text-xs font-bold tracking-widest uppercase px-4 py-3.5 rounded-lg transition-all duration-200 ${
+                          pathname.startsWith("/dashboard")
+                            ? "bg-[#caf300]/10 text-[#caf300] border-l-4 border-[#caf300] pl-3 shadow-[inset_0_0_12px_rgba(202,243,0,0.05)]"
+                            : "text-[#caf300]/80 hover:bg-neutral-900/60 hover:text-white"
+                        }`}
+                      >
+                        <LayoutCells className="size-4" />
+                        DASHBOARD
+                      </Link>
+                    )}
+                  </div>
+                </Drawer.Body>
+              </div>
+
+              {/* Bottom Drawer Layout: Authentication Actions */}
+              <div className="p-4 border-t border-neutral-900/80 bg-[#111111]/30 mb-2">
+                {user ? (
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 text-xs font-bold tracking-widest uppercase py-3.5 border border-red-500/30 text-red-400 bg-red-500/5 hover:bg-red-500 hover:text-white transition-all duration-200 rounded-lg shadow-sm"
+                  >
+                    <ArrowRightFromLine className="size-4" />
+                    LOGOUT
+                  </button>
+                ) : (
+                  <div className="flex flex-col gap-2.5">
+                    <Link
+                      href="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="text-center text-xs font-bold tracking-widest uppercase px-4 py-3 border border-[#8f9378]/20 text-[#8f9378] rounded-lg hover:border-[#caf300] hover:text-[#caf300] transition-colors bg-transparent"
+                    >
+                      LOGIN
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setIsOpen(false)}
+                      className="text-center text-xs font-bold tracking-widest uppercase px-4 py-3 bg-[#caf300] text-[#131313] rounded-lg hover:bg-white font-black transition-colors"
+                    >
+                      JOIN NOW
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </Drawer.Dialog>
+          </Drawer.Content>
+        </Drawer.Backdrop>
+      </Drawer>
     </header>
   );
 }
