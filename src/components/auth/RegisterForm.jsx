@@ -6,8 +6,11 @@ import { MdAddAPhoto, MdOutlineBarChart } from "react-icons/md";
 import { HiArrowRight } from "react-icons/hi2";
 import { FiZap, FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
 
-// Updated password requirements based on your rules
+// Password requirements matching the specified rules
 const PASSWORD_REQUIREMENTS = [
   { label: "6+ CHARACTERS", test: (v) => v.length >= 6 },
   { label: "UPPERCASE LETTER", test: (v) => /[A-Z]/.test(v) },
@@ -29,6 +32,9 @@ const RegisterForm = () => {
   });
 
   const passwordValue = watch("password", "");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") || "/";
 
   function handleAvatarChange(event) {
     const file = event.target.files?.[0];
@@ -46,55 +52,69 @@ const RegisterForm = () => {
     if (avatarFile) {
       try {
         // --- IMGBB IMAGE UPLOAD INTEGRATION ---
-        // TODO: Replace 'YOUR_IMGBB_API_KEY' with your actual ImgBB API key.
-        // You can use process.env.NEXT_PUBLIC_IMGBB_API_KEY for security.
-        const apiKey = "YOUR_IMGBB_API_KEY"; 
+        const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+        if (!apiKey) {
+          console.error("ImgBB API key is missing in environment variables.");
+          toast.error("Image upload configuration missing.");
+          return;
+        }
+
         const formData = new FormData();
         formData.append("image", avatarFile);
 
-        const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-          method: "POST",
-          body: formData,
-        });
+        const imgbbResponse = await fetch(
+          `https://api.imgbb.com/1/upload?key=${apiKey}`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
 
         const imgbbData = await imgbbResponse.json();
-        
+
         if (imgbbData.success) {
           uploadedImageUrl = imgbbData.data.url;
-          console.log("Image successfully uploaded to ImgBB:", uploadedImageUrl);
+          console.log(
+            "Image successfully uploaded to ImgBB:",
+            uploadedImageUrl,
+          );
         } else {
           console.error("ImgBB upload failed:", imgbbData.error);
+          toast.error("Failed to upload identity image.");
           return;
         }
       } catch (error) {
         console.error("Error uploading image to ImgBB:", error);
+        toast.error("Image upload service encountered an error.");
         return;
       }
     }
 
     try {
       // --- BETTER-AUTH SIGN UP INTEGRATION ---
-      // Prepare the user registration payload including the ImgBB image URL
-      const authPayload = {
+      // Note: Ensure your backend schema supports 'role' and 'plan' if using them directly here
+      const res = await authClient.signUp.email({
         email: data.email,
         password: data.password,
         name: data.fullName,
-        image: uploadedImageUrl, // This structured data goes directly to your database via Better-Auth
-      };
+        image: uploadedImageUrl,
+        plan: "free_user",
+      });
 
-      console.log("Sending payload to Better-Auth:", authPayload);
+      // Better-Auth returns an standard object structure containing { data, error }
+      if (res?.error) {
+        throw new Error(
+          res.error.message || "Authentication protocol rejected registration.",
+        );
+      }
 
-      // TODO: Implement your Better-Auth client signUp function here.
-      // Example standard implementation syntax:
-      // const res = await authClient.signUp.email({
-      //   email: data.email,
-      //   password: data.password,
-      //   name: data.fullName,
-      //   image: uploadedImageUrl,
-      // });
-      // if (res.error) { throw new Error(res.error.message); }
-
+      if (res?.data) {
+        toast.success("Registration successful!");
+        console.log("User successfully registered:", res.data);
+        router.push(redirectTo);
+      }
     } catch (error) {
+      toast.error(error.message || "Registration failed. Please try again.");
       console.error("Registration failed via Better-Auth:", error);
     }
   }
@@ -102,16 +122,15 @@ const RegisterForm = () => {
   return (
     <div className="min-h-screen w-full bg-[#131313] text-[#e5e2e1] font-sans flex items-center justify-center p-6 md:p-12">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center lg:items-stretch">
-        
         {/* ================= LEFT SIDE: BRANDING / HERO SECTION ================= */}
-        {/* Added 'hidden md:flex' to completely hide this section on small mobile screens and show only on medium or larger devices */}
         <div className="hidden md:flex lg:col-span-5 flex-col justify-between py-6 space-y-10">
           <div>
             <h1 className="text-5xl font-black uppercase tracking-tighter text-[#caf300] leading-none mb-4">
               FORGE<span className="text-white">FIT</span>
             </h1>
             <p className="text-base text-neutral-400 max-w-sm font-medium leading-relaxed">
-              Industrial-grade training for those who demand absolute performance.
+              Industrial-grade training for those who demand absolute
+              performance.
             </p>
           </div>
 
@@ -122,8 +141,12 @@ const RegisterForm = () => {
                 <FiZap className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold uppercase tracking-tight text-white">Power First</h3>
-                <p className="text-sm text-neutral-400 mt-0.5">Built for athletes, not spectators.</p>
+                <h3 className="text-lg font-bold uppercase tracking-tight text-white">
+                  Power First
+                </h3>
+                <p className="text-sm text-neutral-400 mt-0.5">
+                  Built for athletes, not spectators.
+                </p>
               </div>
             </div>
 
@@ -133,36 +156,41 @@ const RegisterForm = () => {
                 <MdOutlineBarChart className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold uppercase tracking-tight text-white">Data Driven</h3>
-                <p className="text-sm text-neutral-400 mt-0.5">Track metrics with mechanical precision.</p>
+                <h3 className="text-lg font-bold uppercase tracking-tight text-white">
+                  Data Driven
+                </h3>
+                <p className="text-sm text-neutral-400 mt-0.5">
+                  Track metrics with mechanical precision.
+                </p>
               </div>
             </div>
           </div>
 
           {/* Cinematic Live Banner Image */}
           <div className="hidden lg:block relative group h-44 rounded-xl overflow-hidden border border-neutral-800/80">
-  <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent z-10"></div>
-  <Image 
-    className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" 
-    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJA4yWFdf41iIh4W6InsG8necmMhMhWPnyI5LipFYH3f6soNR-0TXTeQ6M5lB5GO0rq5nVQQwsu_S-vKVAsqcGOebBt82jPiHWkDnML2F62AXYQGmArPv49_YAsiRxgiIcTP54oaovBvcvuvqe7M6InGluBX2WheVmg5E3zgSKp8YCo6h3SKKKd-0lJd8iT-7dUBq7kSUXrZ17TKZwRO_hk3t6KK4MZKgS9YbulP8OWdlOLAr4xQgeRHfa-8mN2yXZT1V9zspxyeo" 
-    alt="Industrial Gym"
-    width={600}
-    height={176}
-    priority
-  />
-  <div className="absolute bottom-4 left-4 z-20">
-    <span className="text-[10px] font-mono tracking-wider font-bold text-[#caf300] border border-[#caf300] px-2 py-0.5 uppercase rounded-sm">
-      Live Now
-    </span>
-    <p className="text-white font-black tracking-tight mt-1.5 text-xs">INDUSTRIAL OPEN 2024</p>
-  </div>
-</div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent z-10"></div>
+            <Image
+              className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105"
+              src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=600&auto=format&fit=crop"
+              alt="Industrial Gym"
+              width={600}
+              height={176}
+              priority
+            />
+            <div className="absolute bottom-4 left-4 z-20">
+              <span className="text-[10px] font-mono tracking-wider font-bold text-[#caf300] border border-[#caf300] px-2 py-0.5 uppercase rounded-sm">
+                Live Now
+              </span>
+              <p className="text-white font-black tracking-tight mt-1.5 text-xs">
+                INDUSTRIAL OPEN 2024
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* ================= RIGHT SIDE: REGISTRATION FORM SECTION ================= */}
         <div className="col-span-1 lg:col-span-7">
           <div className="w-full rounded-md border-t border-l border-white/5 bg-[#1c1b1b] p-8 md:p-10 relative overflow-hidden shadow-2xl">
-            
             {/* Card Header */}
             <div className="flex items-end justify-between border-b border-neutral-800/60 pb-6">
               <div>
@@ -210,14 +238,14 @@ const RegisterForm = () => {
                     IDENTITY IMAGE
                   </p>
                   <p className="text-xs text-neutral-400 max-w-xs leading-normal">
-                    Upload a clear headshot for your athlete profile. JPG/PNG. Max 5MB.
+                    Upload a clear headshot for your athlete profile. JPG/PNG.
+                    Max 5MB.
                   </p>
                 </div>
               </div>
 
               {/* Full name + Email inputs group */}
               <div className="grid gap-4 sm:grid-cols-2">
-                {/* Full Name input */}
                 <div className="space-y-1.5">
                   <label
                     htmlFor="fullName"
@@ -229,7 +257,9 @@ const RegisterForm = () => {
                     id="fullName"
                     type="text"
                     placeholder="ALEX STEFANO"
-                    {...register("fullName", { required: "Full name is required" })}
+                    {...register("fullName", {
+                      required: "Full name is required",
+                    })}
                     className="w-full border border-neutral-800 bg-[#161515] px-4 py-3 text-sm text-white placeholder:text-neutral-700 focus:border-[#caf300] focus:outline-none focus:ring-0 uppercase transition-all rounded-none"
                   />
                   {errors.fullName && (
@@ -239,7 +269,6 @@ const RegisterForm = () => {
                   )}
                 </div>
 
-                {/* Email input */}
                 <div className="space-y-1.5">
                   <label
                     htmlFor="email"
@@ -268,7 +297,7 @@ const RegisterForm = () => {
                 </div>
               </div>
 
-              {/* Password input with customized dynamic requirements */}
+              {/* Password input with validation */}
               <div className="space-y-1.5">
                 <label
                   htmlFor="password"
@@ -283,12 +312,16 @@ const RegisterForm = () => {
                     placeholder="••••••••••••"
                     {...register("password", {
                       required: "Password is required",
-                      // Validation checks built directly into standard react-hook-form schema matching your specifications
                       validate: {
-                        minLength: (v) => v.length >= 6 || "Minimum 6 characters",
-                        hasUpper: (v) => /[A-Z]/.test(v) || "Must contain at least one uppercase letter",
-                        hasLower: (v) => /[a-z]/.test(v) || "Must contain at least one lowercase letter",
-                      }
+                        minLength: (v) =>
+                          v.length >= 6 || "Minimum 6 characters",
+                        hasUpper: (v) =>
+                          /[A-Z]/.test(v) ||
+                          "Must contain at least one uppercase letter",
+                        hasLower: (v) =>
+                          /[a-z]/.test(v) ||
+                          "Must contain at least one lowercase letter",
+                      },
                     })}
                     className="w-full border border-neutral-800 bg-[#161515] px-4 py-3 text-sm text-white placeholder:text-neutral-700 focus:border-[#caf300] focus:outline-none focus:ring-0 transition-all rounded-none tracking-widest"
                   />
@@ -297,10 +330,14 @@ const RegisterForm = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors"
                   >
-                    {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <FiEyeOff className="h-4 w-4" />
+                    ) : (
+                      <FiEye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
-                
+
                 {errors.password && (
                   <p className="mt-1 text-xs text-red-400 font-mono">
                     {errors.password.message}
@@ -334,7 +371,9 @@ const RegisterForm = () => {
                   disabled={isSubmitting}
                   className="group relative flex w-full items-center justify-center gap-2 bg-[#caf300] py-4 font-black tracking-tight text-lg text-black transition-all hover:bg-[#b5da00] hover:shadow-[0_0_25px_rgba(202,243,0,0.25)] active:scale-[0.99] disabled:opacity-60 uppercase rounded-none"
                 >
-                  <span>{isSubmitting ? "PROCESSING..." : "JOIN THE ELITE"}</span>
+                  <span>
+                    {isSubmitting ? "PROCESSING..." : "JOIN THE ELITE"}
+                  </span>
                   <HiArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </button>
 
@@ -349,7 +388,6 @@ const RegisterForm = () => {
             <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-[#caf300]/20"></div>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export const metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
         style={{ background: "#131313", color: "#e5e2e1", minHeight: "100vh" }}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );
