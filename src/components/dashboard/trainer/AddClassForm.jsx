@@ -21,15 +21,18 @@ import {
   ListBox,
   ListBoxItem,
   Label,
-  Description,
 } from "@heroui/react";
 import { ImSpinner9 } from "react-icons/im";
+import toast from "react-hot-toast";
+import { PostClass } from "@/lib/action/classes";
+import { authClient } from "@/lib/auth-client";
 
 export default function AddClassForm() {
+  const { data: session } = authClient.useSession();
   const [isUploading, setIsUploading] = useState(false);
+  const user = session?.user;
   const [previewImage, setPreviewImage] = useState("");
 
-  // ImgBB API Key
   const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
   const {
@@ -38,7 +41,8 @@ export default function AddClassForm() {
     control,
     setValue,
     watch,
-    formState: { errors },
+    reset, // Destructured reset function here
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       title: "",
@@ -68,7 +72,6 @@ export default function AddClassForm() {
     }
   };
 
-  // ImgBB Image Upload Handler
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -93,7 +96,7 @@ export default function AddClassForm() {
         setValue("image", result.data.url, { shouldValidate: true });
         console.log("Uploaded Image URL:", result.data.url);
       } else {
-        alert("Image upload failed. Please check ImgBB API Key.");
+        toast.error("Image upload failed.");
       }
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -103,8 +106,28 @@ export default function AddClassForm() {
     }
   };
 
-  const onSubmit = (data) => {
-    console.log("Submitting Deployment Protocol via RHF:", data);
+  const onSubmit = async (data) => {
+    try {
+      const res = await PostClass({
+        ...data,
+        trainerName: user?.name || "",
+        trainerEmail: user?.email || "",
+        trainerImage: user?.image || "",
+      });
+
+      if (res) {
+        toast.success("Class successfully deployed.");
+        console.log("Submitting Deployment Protocol via RHF:", data);
+
+        // Clears the text inputs and state values to default metrics
+        reset();
+        // Wipes the visual media preview element
+        setPreviewImage("");
+      }
+    } catch (error) {
+      toast.error("Failed to Upload class.");
+      console.log("Error connecting to backend:", error);
+    }
   };
 
   return (
@@ -178,7 +201,7 @@ export default function AddClassForm() {
                 )}
               </div>
 
-              {/* HeroUI Custom Dropdowns Implementation */}
+              {/* Dropdowns */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Category Selector */}
                 <div className="flex flex-col gap-2">
@@ -196,7 +219,6 @@ export default function AddClassForm() {
                       >
                         <Label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-1.5 mb-2">
                           <Persons className="size-3.5" /> Category
-                          (Specialization)
                         </Label>
                         <SelectTrigger className="bg-[#353534]/50 border border-[#444932]/50 p-4 font-sans text-white focus:outline-none data-[hover=true]:border-[#caf300] rounded-sm flex justify-between items-center w-full min-h-[58px]">
                           <SelectValue className="text-white font-sans text-sm" />
@@ -213,7 +235,7 @@ export default function AddClassForm() {
                               <ListBoxItem
                                 key={cat}
                                 textValue={cat}
-                                className="p-3 text-sm text-white rounded-sm cursor-pointer transition-colors block w-full data-[hover=true]:bg-[#caf300] data-[hover=true]:text-black data-[selected=true]:bg-[#caf300] data-[selected=true]:text-black data-[focus=true]:bg-[#caf300] data-[focus=true]:text-black"
+                                className="p-3 text-sm text-white rounded-sm cursor-pointer transition-colors block w-full data-[hover=true]:bg-[#caf300] data-[hover=true]:text-black"
                               >
                                 <span className="text-inherit block w-full">
                                   {cat}
@@ -243,7 +265,6 @@ export default function AddClassForm() {
                       >
                         <Label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-1.5 mb-2">
                           <GraduationCap className="size-3.5" /> Difficulty
-                          Level (Intensity Matrix)
                         </Label>
                         <SelectTrigger className="bg-[#353534]/50 border border-[#444932]/50 p-4 font-sans text-white focus:outline-none data-[hover=true]:border-[#caf300] rounded-sm flex justify-between items-center w-full min-h-[58px]">
                           <SelectValue className="text-white font-sans text-sm" />
@@ -260,7 +281,7 @@ export default function AddClassForm() {
                               <ListBoxItem
                                 key={lvl}
                                 textValue={lvl}
-                                className="p-3 text-sm text-white rounded-sm cursor-pointer transition-colors block w-full data-[hover=true]:bg-[#caf300] data-[hover=true]:text-black data-[selected=true]:bg-[#caf300] data-[selected=true]:text-black data-[focus=true]:bg-[#caf300] data-[focus=true]:text-black"
+                                className="p-3 text-sm text-white rounded-sm cursor-pointer transition-colors block w-full data-[hover=true]:bg-[#caf300] data-[hover=true]:text-black"
                               >
                                 <span className="text-inherit block w-full">
                                   {lvl}
@@ -279,7 +300,7 @@ export default function AddClassForm() {
 
           {/* RIGHT COLUMN: MEDIA & PRICING CARDS */}
           <div className="md:col-span-4 flex flex-col gap-6">
-            {/* Visual Asset Upload Card */}
+            {/* Image Upload Card */}
             <div className="bg-[#201f1f]/70 backdrop-blur-md border border-[#caf300]/10 p-6 flex-1 flex flex-col rounded-sm">
               <h3 className="font-sans font-bold text-lg mb-4 border-b border-[#444932]/30 pb-2 uppercase italic text-white">
                 Visual Asset
@@ -340,7 +361,7 @@ export default function AddClassForm() {
               )}
             </div>
 
-            {/* Resource Cost Input Card */}
+            {/* Price Input Card */}
             <div className="bg-[#201f1f]/70 backdrop-blur-md border border-[#caf300]/10 p-6 rounded-sm">
               <h3 className="font-sans font-bold text-lg mb-4 border-b border-[#444932]/30 pb-2 uppercase italic text-white flex items-center gap-2">
                 <CircleDollar className="size-4 text-[#caf300]" /> Resource Cost
@@ -369,20 +390,17 @@ export default function AddClassForm() {
                   {errors.price.message}
                 </span>
               )}
-              <p className="font-sans text-xs text-[#c5c9ac] mt-2 italic">
-                Per Session Unit
-              </p>
             </div>
           </div>
 
-          {/* LOWER SECTION: SCHEDULE & LOGISTICS CARD */}
+          {/* LOWER SECTION: SCHEDULE & LOGISTICS */}
           <div className="md:col-span-12 bg-[#201f1f]/70 backdrop-blur-md border border-[#caf300]/10 p-6 md:p-8 rounded-sm">
             <h3 className="font-sans font-bold text-lg md:text-xl mb-6 border-b border-[#444932]/30 pb-2 uppercase italic text-white flex items-center gap-2">
               <Calendar className="size-5 text-[#caf300]" /> Schedule & Duration
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Day Selection Grid */}
+              {/* Day Selection */}
               <div className="space-y-4">
                 <label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-2">
                   <Calendar className="size-4" /> Class Days
@@ -425,7 +443,7 @@ export default function AddClassForm() {
                 />
               </div>
 
-              {/* Time and Scale Metrics Input */}
+              {/* Time and Duration */}
               <div className="space-y-4">
                 <label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-2">
                   <Clock className="size-4" /> Time & Duration
@@ -462,7 +480,7 @@ export default function AddClassForm() {
                 )}
               </div>
 
-              {/* Unit Capacity Scale */}
+              {/* Unit Capacity */}
               <div className="space-y-4">
                 <label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-2">
                   <Persons className="size-4" /> Unit Capacity
@@ -498,11 +516,23 @@ export default function AddClassForm() {
           >
             Save Draft
           </button>
+
           <button
             type="submit"
-            className="w-full sm:w-auto px-10 py-4 bg-[#caf300] text-[#131313] font-mono text-xs font-black uppercase tracking-widest hover:bg-[#b0d500] transition-all active:scale-[0.98] flex items-center justify-center gap-2 rounded-sm shadow-[0_4px_20px_rgba(202,243,0,0.15)]"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto px-10 py-4 bg-[#caf300] text-[#131313] font-mono text-xs font-black uppercase tracking-widest hover:bg-[#b0d500] transition-all active:scale-[0.98] flex items-center justify-center gap-2 rounded-sm shadow-[0_4px_20px_rgba(202,243,0,0.15)] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Submit for Deployment <Thunderbolt className="size-4 font-bold" />
+            {isSubmitting ? (
+              <>
+                Deploying Protocol...{" "}
+                <ImSpinner9 className="size-4 animate-spin" />
+              </>
+            ) : (
+              <>
+                Submit for Deployment{" "}
+                <Thunderbolt className="size-4 font-bold" />
+              </>
+            )}
           </button>
         </div>
       </form>
