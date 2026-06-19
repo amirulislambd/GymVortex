@@ -26,11 +26,13 @@ import { ImSpinner9 } from "react-icons/im";
 import toast from "react-hot-toast";
 import { PostClass } from "@/lib/action/classes";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function AddClassForm() {
   const { data: session } = authClient.useSession();
   const [isUploading, setIsUploading] = useState(false);
   const user = session?.user;
+  const router = useRouter();
   const [previewImage, setPreviewImage] = useState("");
 
   const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
@@ -123,6 +125,7 @@ export default function AddClassForm() {
         reset();
         // Wipes the visual media preview element
         setPreviewImage("");
+        router.push("/dashboard/trainer/my-classes");
       }
     } catch (error) {
       toast.error("Failed to Upload class.");

@@ -1,18 +1,17 @@
 import EliteTrainers from "@/components/home/EliteTrainers";
 import HeroSection from "@/components/home/HeroSection";
 import StatsSection from "@/components/home/StatsSection";
-import Footer from "@/components/shared/Footer";
-import Navbar from "@/components/shared/Navbar";
+
 
 export default function Home() {
   return (
     <>
       <main>
-        <Navbar />
+
         <HeroSection />
         <StatsSection />
         <EliteTrainers />
-        <Footer />
+
       </main>
     </>
   );

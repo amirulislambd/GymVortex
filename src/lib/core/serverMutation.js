@@ -2,6 +2,13 @@ import { redirect } from "next/navigation";
 import { GetUserToken } from "./session";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+export const ServerFetch = async (url) => {
+  const res = await fetch(`${baseUrl}/api/${url}`);
+  return await res.json();
+};
+
+
 export const authHeader = async () => {
   const token = await GetUserToken();
   const header = token ? { authorization: `Bearer ${token}` } : {};

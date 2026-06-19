@@ -1,11 +1,22 @@
-import React from 'react';
+import AllClasses from "@/components/classes/AllClasses";
 
-const AllClasses = () => {
-    return (
-        <div>
-            <h1>All Classes</h1>
-        </div>
-    );
+import React from "react";
+export const metadata = {
+  title: "All Fitness Classes | Train Without Limits",
+  description:
+    "Browse our premium fitness classes including Yoga, Cardio, HIIT, and Powerlifting. Find expert trainers and book your sessions.",
+  openGraph: {
+    title: "All Fitness Classes | Train Without Limits",
+    description: "Discover the best gym and fitness classes tailored for you.",
+    type: "website",
+  },
+};
+const AllClassesPage = () => {
+  return (
+    <div>
+      <AllClasses />
+    </div>
+  );
 };
 
-export default AllClasses;
+export default AllClassesPage;

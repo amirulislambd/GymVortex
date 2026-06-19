@@ -1,7 +1,14 @@
-import React from 'react';
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
 
-const MainLayout = ({ children }) => {
-  return children;
-};
-
-export default MainLayout;
+export default function MainLayout({ children }) {
+  return (
+    <>
+      <div>
+        <Navbar />
+        <main className="min-h-screen bg-[#0d0d0d] pt-24">{children}</main>
+        <Footer />
+      </div>
+    </>
+  );
+}
