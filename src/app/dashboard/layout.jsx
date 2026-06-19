@@ -1,15 +1,10 @@
-import Navbar from "@/components/dashboard/user/Navbar";
-import Sidebar from "@/components/dashboard/user/Sidebar";
-import React from "react";
+import DashboardShell from "@/components/dashboard/DashboardShell";
 
-const SidebarLayout = ({ children }) => {
-  return (
-    <div>
-      <Navbar />
-      <Sidebar />
-      {children}
-    </div>
-  );
+export const metadata = {
+  title: "Dashboard — GymVortex",
+  description: "Manage your fitness journey on GymVortex.",
 };
 
-export default SidebarLayout;
+export default function DashboardLayout({ children }) {
+  return <DashboardShell>{children}</DashboardShell>;
+}
