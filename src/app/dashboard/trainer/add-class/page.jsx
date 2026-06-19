@@ -1,11 +1,12 @@
-import React from 'react';
+import AddClassForm from "@/components/dashboard/trainer/AddClassForm";
+import React from "react";
 
 const AddClass = () => {
-    return (
-        <div>
-            <h1>Add Class</h1>
-        </div>
-    );
+  return (
+    <div>
+      <AddClassForm />
+    </div>
+  );
 };
 
 export default AddClass;

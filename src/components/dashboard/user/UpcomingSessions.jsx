@@ -1,95 +1,88 @@
-import { FiArrowRight, FiCalendar } from "react-icons/fi";
+import { FiArrowRight, FiCalendar, FiRotateCcw } from "react-icons/fi";
 import Link from "next/link";
 
 const sessions = [
   {
     id: 1,
+    when: "TODAY | 18:30",
+    icon: "repeat",
+    title: "METABOLIC POWER",
+    coach: "COACH STRICKLAND",
     date: { month: "OCT", day: "24" },
-    title: "Metabolic Power",
-    time: "08:00 AM",
-    coach: "Coach Jax",
   },
   {
     id: 2,
+    when: "TOMORROW | 07:00",
+    icon: "calendar",
+    title: "INDUSTRIAL HIIT",
+    coach: "COACH VANCE",
     date: { month: "OCT", day: "26" },
-    title: "Industrial HIIT",
-    time: "05:30 PM",
-    coach: "Coach Raze",
   },
 ];
 
 export default function UpcomingSessions() {
   return (
-    <div className="bg-[#0f0f0f] border border-neutral-900 p-5 flex flex-col gap-4">
+    <div className="bg-[#0f0f0f] border border-neutral-900 p-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <h2
           className="text-base sm:text-lg font-black uppercase tracking-wider text-white"
           style={{ fontFamily: "Archivo Narrow, sans-serif" }}
         >
           UPCOMING
         </h2>
-        <FiCalendar className="text-neutral-600" size={16} />
+        <Link
+          href="/dashboard/user/booked-classes"
+          className="text-[10px] font-black uppercase tracking-widest text-[#caf300] hover:underline"
+          style={{ fontFamily: "JetBrains Mono, monospace" }}
+        >
+          VIEW SCHEDULE
+        </Link>
       </div>
 
       {/* Sessions */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {sessions.map((s) => (
           <div
             key={s.id}
-            className="flex items-center gap-4 p-3 border border-neutral-900 hover:border-[#caf300]/20 hover:bg-[#caf300]/5 transition-all group cursor-pointer"
+            className="border-l-2 border-[#caf300] pl-4 py-2 pr-3 bg-[#0a0a0a] hover:bg-[#111] transition-all group cursor-pointer"
           >
-            {/* Date Badge */}
-            <div className="flex flex-col items-center justify-center w-10 shrink-0">
+            {/* When */}
+            <div className="flex items-center justify-between mb-1.5">
               <span
-                className="text-[9px] font-bold uppercase text-neutral-500 leading-none"
+                className="text-[9px] font-bold uppercase tracking-widest text-neutral-500"
                 style={{ fontFamily: "JetBrains Mono, monospace" }}
               >
-                {s.date.month}
+                {s.when}
               </span>
-              <span
-                className="text-xl font-black text-[#caf300] leading-tight"
-                style={{ fontFamily: "Archivo Narrow, sans-serif" }}
-              >
-                {s.date.day}
-              </span>
+              {s.icon === "repeat" ? (
+                <FiRotateCcw size={11} className="text-neutral-700" />
+              ) : (
+                <FiCalendar size={11} className="text-neutral-700" />
+              )}
             </div>
 
-            {/* Divider */}
-            <div className="w-px h-8 bg-neutral-800" />
+            {/* Title */}
+            <p
+              className="text-base sm:text-lg font-black uppercase text-white leading-tight"
+              style={{ fontFamily: "Archivo Narrow, sans-serif" }}
+            >
+              {s.title}
+            </p>
 
-            {/* Info */}
-            <div className="flex flex-col gap-0.5 flex-1">
+            {/* Coach */}
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className="text-[#caf300] text-xs">▲</span>
               <span
-                className="text-sm font-black uppercase text-white leading-tight"
-                style={{ fontFamily: "Archivo Narrow, sans-serif" }}
-              >
-                {s.title}
-              </span>
-              <span
-                className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider"
+                className="text-[10px] font-bold uppercase tracking-widest text-neutral-500"
                 style={{ fontFamily: "JetBrains Mono, monospace" }}
               >
-                {s.time} • {s.coach}
+                {s.coach}
               </span>
             </div>
-
-            <FiArrowRight
-              className="text-neutral-700 group-hover:text-[#caf300] transition-colors shrink-0"
-              size={14}
-            />
           </div>
         ))}
       </div>
-
-      {/* View All */}
-      <Link
-        href="/dashboard/user/booked-classes"
-        className="w-full py-2.5 text-center text-[10px] font-black uppercase tracking-widest text-[#caf300] border border-[#caf300]/20 hover:bg-[#caf300]/10 transition-all mt-auto"
-        style={{ fontFamily: "JetBrains Mono, monospace" }}
-      >
-        VIEW ALL SESSIONS
-      </Link>
     </div>
   );
 }
