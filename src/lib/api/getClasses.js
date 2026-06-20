@@ -30,10 +30,9 @@ export const GetClasses = async (params) => {
     return { success: false, data: [], pagination: null };
   }
 };
-
-export const GetHomePageClasses = async () => {
+export const GetClassById = async (id) => {
   try {
-    const data = await ServerFetch("sixClasses");
+    const data = await ServerFetch(`classes/${id}`);
     return data;
   } catch (error) {
     console.error("Failed syncing infrastructure matrix from backend:", error);
