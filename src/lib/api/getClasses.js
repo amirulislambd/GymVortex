@@ -16,6 +16,12 @@ export const GetClasses = async (params) => {
       if (params.category && params.category !== "All") {
         queryParams.append("category", params.category);
       }
+      if (params.difficulty && params.difficulty !== "All") {
+        queryParams.append("difficulty", params.difficulty);
+      }
+      if (params.sortPrice && params.sortPrice !== "All") {
+        queryParams.append("sortPrice", params.sortPrice);
+      }
     }
     const data = await ServerFetch(`classes?${queryParams.toString()}`);
     return data;

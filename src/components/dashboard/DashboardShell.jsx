@@ -11,7 +11,7 @@ import Sidebar from "./Sidebar";
 export default function DashboardShell({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  console.log("mobileOpen:", mobileOpen); // debug করো
+  console.log("mobileOpen:", mobileOpen); 
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
