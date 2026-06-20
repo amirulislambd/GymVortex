@@ -62,35 +62,7 @@ export default function ClassActions({ classData, id }) {
       return;
     }
 
-    try {
-      setBookingLoading(true);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            classId: id,
-            userEmail: user.email,
-            userName: user.name,
-            trainerEmail: classData?.trainerEmail,
-          }),
-        }
-      );
-      const result = await res.json();
-
-      if (result.success) {
-        setIsAlreadyBooked(true);
-        router.push(`/payment?classId=${id}`);
-      } else {
-        showToast(result.message || "Booking failed. Try again.", "error");
-      }
-    } catch (error) {
-      console.error("Booking failed:", error);
-      showToast("Something went wrong. Please try again.", "error");
-    } finally {
-      setBookingLoading(false);
-    }
+    router.push(`/classes/${id}/confirm`);
   };
 
   const handleToggleFavorite = async () => {
