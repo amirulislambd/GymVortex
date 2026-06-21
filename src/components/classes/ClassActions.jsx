@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { authClient } from "@/lib/auth-client";
+import { AddFavorite } from "@/lib/action/favorite";
 
 export default function ClassActions({ classData, id }) {
   const router = useRouter();
@@ -22,26 +23,33 @@ export default function ClassActions({ classData, id }) {
   };
 
   // Check if already booked or favorited
-  useEffect(() => {
-    if (!user) return;
+  // useEffect(() => {
+  //   if (!user) return;
 
-    const checkStatus = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/classes/${id}/status?email=${user.email}`
-        );
-        const data = await res.json();
-        if (data.success) {
-          setIsAlreadyBooked(data.isBooked);
-          setIsFavorite(data.isFavorite);
-        }
-      } catch (err) {
-        console.error("Status check failed:", err);
-      }
-    };
+  //   const checkStatus = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `${process.env.NEXT_PUBLIC_API_URL}/api/classes/${id}/status?email=${user.email}`,
+  //       );
+  //       const data = await res.json();
+  //       if (data.success) {
+  //         setIsAlreadyBooked(data.isBooked);
+  //         setIsFavorite(data.isFavorite);
+  //       }
+  //     } catch (err) {
+  //       console.error("Status check failed:", err);
+  //     }
+  //   };
 
-    checkStatus();
-  }, [user, id]);
+  //   checkStatus();
+  // }, [user, id]);
+
+  const slotsLeft = Math.max(
+    0,
+    parseInt(classData.capacity) - (classData.bookingCount || 0),
+  );
+
+  const hazardPercentage = (slotsLeft / parseInt(classData.capacity)) * 100;
 
   const handleBooking = async () => {
     // Auth check
@@ -62,7 +70,13 @@ export default function ClassActions({ classData, id }) {
       return;
     }
 
-    router.push(`/classes/${id}/confirm`);
+    try {
+      setBookingLoading(true);
+      router.push(`/classes/${id}/confirm`);
+    } catch (error) {
+      showToast("Something went wrong. Please try again.", "error");
+      setBookingLoading(false);
+    }
   };
 
   const handleToggleFavorite = async () => {
@@ -79,61 +93,48 @@ export default function ClassActions({ classData, id }) {
         // Remove favorite
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/${id}?email=${user.email}`,
-          { method: "DELETE" }
+          { method: "DELETE" },
         );
         const result = await res.json();
+
         if (result.success) {
           setIsFavorite(false);
           showToast("Removed from favorites.", "success");
+        } else {
+          showToast(result.message || "Failed to remove favorite.", "error");
         }
       } else {
         // Add favorite
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/favorites`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              classId: id,
-              userEmail: user.email,
-              classData: {
-                title: classData.title,
-                image: classData.image,
-                category: classData.category,
-                price: classData.price,
-                trainerName: classData.trainerName,
-              },
-            }),
-          }
-        );
-        const result = await res.json();
+        const list = {
+          classId: id,
+          userEmail: user.email,
+          classData: {
+            title: classData.title,
+            image: classData.image,
+            category: classData.category,
+            price: classData.price,
+            trainerName: classData.trainerName,
+          },
+        };
+
+        const result = await AddFavorite(list);
         if (result.success) {
           setIsFavorite(true);
           showToast("Successfully added to your favorites!", "success");
-          if (typeof window !== "undefined" && window.navigator.vibrate) {
-            window.navigator.vibrate(50);
-          }
         } else {
           showToast(result.message || "Failed to add favorite.", "error");
         }
       }
     } catch (error) {
-      console.error("Favorite toggle failed:", error);
-      showToast("Something went wrong. Please try again.", "error");
+      console.error("Favorite toggle error:", error);
+      showToast("Failed to update favorite. Try again.", "error");
     } finally {
       setFavoriteLoading(false);
     }
   };
 
-  const slotsLeft = Math.max(
-    0,
-    parseInt(classData.capacity) - (classData.bookingCount || 0)
-  );
-  const hazardPercentage = (slotsLeft / parseInt(classData.capacity)) * 100;
-
   return (
     <div className="bg-[#262626]/70 backdrop-blur-xl border border-[#caf300]/10 p-4 sm:p-6 md:p-8 border-t-4 border-t-[#caf300] rounded-sm">
-
       {/* Price + Slots */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 sm:mb-8">
         <div>
@@ -163,8 +164,8 @@ export default function ClassActions({ classData, id }) {
               slotsLeft === 0
                 ? "text-red-400"
                 : slotsLeft <= 3
-                ? "text-orange-400"
-                : "text-[#caf300]"
+                  ? "text-orange-400"
+                  : "text-[#caf300]"
             }`}
             style={{ fontFamily: "JetBrains Mono, monospace" }}
           >
@@ -185,7 +186,6 @@ export default function ClassActions({ classData, id }) {
 
       {/* Buttons */}
       <div className="flex flex-col gap-3">
-
         {/* Book Now */}
         <button
           disabled={slotsLeft === 0 || bookingLoading || isAlreadyBooked}
@@ -196,10 +196,10 @@ export default function ClassActions({ classData, id }) {
           {bookingLoading
             ? "Processing..."
             : isAlreadyBooked
-            ? "Already Booked"
-            : slotsLeft === 0
-            ? "Class Full"
-            : "Book Now →"}
+              ? "Already Booked"
+              : slotsLeft === 0
+                ? "Class Full"
+                : "Book Now →"}
         </button>
 
         {/* Add to Favorites */}
@@ -227,8 +227,8 @@ export default function ClassActions({ classData, id }) {
           {favoriteLoading
             ? "Processing..."
             : isFavorite
-            ? "Saved to Favorites"
-            : "Add to Favorites"}
+              ? "Saved to Favorites"
+              : "Add to Favorites"}
         </button>
 
         {/* Login prompt */}
