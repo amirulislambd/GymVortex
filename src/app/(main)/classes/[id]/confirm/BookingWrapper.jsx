@@ -58,15 +58,17 @@ export default function BookingWrapper({ classData, id }) {
       showToast("Verifying credentials...", "info");
   
       // Send dynamic data including classId to the backend Stripe session configuration
-      const response = await fetch('/api/checkout_sessions', {
-        method: 'POST',
+      const response = await fetch("/api/checkout_sessions", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           className: classData?.title || "MOBILITY REPAIR",
           PriceAmount: classData?.price || 380, // Matches 'PriceAmount' expected by backend
           classId: id, // Pass the original MongoDB class id
+          classImage: classData?.image || "",
+          userEmail: user?.email,
         }),
       });
   

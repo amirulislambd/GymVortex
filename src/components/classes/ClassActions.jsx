@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaRegHeart, FaCheckCircle } from "react-icons/fa";
 import { authClient } from "@/lib/auth-client";
 import { AddFavorite } from "@/lib/action/favorite";
 
@@ -15,34 +16,12 @@ export default function ClassActions({ classData, id }) {
   const [isAlreadyBooked, setIsAlreadyBooked] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [toast, setToast] = useState(null); // { message, type: "success" | "error" }
+  const [toast, setToast] = useState(null);
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   };
-
-  // Check if already booked or favorited
-  // useEffect(() => {
-  //   if (!user) return;
-
-  //   const checkStatus = async () => {
-  //     try {
-  //       const res = await fetch(
-  //         `${process.env.NEXT_PUBLIC_API_URL}/api/classes/${id}/status?email=${user.email}`,
-  //       );
-  //       const data = await res.json();
-  //       if (data.success) {
-  //         setIsAlreadyBooked(data.isBooked);
-  //         setIsFavorite(data.isFavorite);
-  //       }
-  //     } catch (err) {
-  //       console.error("Status check failed:", err);
-  //     }
-  //   };
-
-  //   checkStatus();
-  // }, [user, id]);
 
   const slotsLeft = Math.max(
     0,
@@ -86,44 +65,29 @@ export default function ClassActions({ classData, id }) {
       return;
     }
 
+    if (favoriteLoading || isFavorite) return;
+
     try {
       setFavoriteLoading(true);
 
-      if (isFavorite) {
-        // Remove favorite
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/${id}?email=${user.email}`,
-          { method: "DELETE" },
-        );
-        const result = await res.json();
+      const list = {
+        classId: id,
+        userEmail: user.email,
+        title: classData.title,
+        image: classData.image,
+        category: classData.category,
+        price: classData.price,
+        trainerName: classData.trainerName,
+        trainerImage: classData.trainerImage,
+      };
 
-        if (result.success) {
-          setIsFavorite(false);
-          showToast("Removed from favorites.", "success");
-        } else {
-          showToast(result.message || "Failed to remove favorite.", "error");
-        }
+      const result = await AddFavorite(list);
+
+      if (result?.insertedId) {
+        setIsFavorite(true);
+        showToast("Successfully added to your favorites!", "success");
       } else {
-        // Add favorite
-        const list = {
-          classId: id,
-          userEmail: user.email,
-          classData: {
-            title: classData.title,
-            image: classData.image,
-            category: classData.category,
-            price: classData.price,
-            trainerName: classData.trainerName,
-          },
-        };
-
-        const result = await AddFavorite(list);
-        if (result.success) {
-          setIsFavorite(true);
-          showToast("Successfully added to your favorites!", "success");
-        } else {
-          showToast(result.message || "Failed to add favorite.", "error");
-        }
+        showToast(result?.message || "Failed to add favorite.", "error");
       }
     } catch (error) {
       console.error("Favorite toggle error:", error);
@@ -204,7 +168,7 @@ export default function ClassActions({ classData, id }) {
 
         {/* Add to Favorites */}
         <button
-          disabled={favoriteLoading}
+          disabled={favoriteLoading || isFavorite}
           onClick={handleToggleFavorite}
           className={`w-full py-3 sm:py-4 border-2 font-bold text-sm sm:text-base md:text-lg uppercase flex items-center justify-center gap-2 transition-all group rounded-sm cursor-pointer disabled:opacity-40 ${
             isFavorite
@@ -213,17 +177,15 @@ export default function ClassActions({ classData, id }) {
           }`}
           style={{ fontFamily: "Archivo Narrow, sans-serif" }}
         >
-          <motion.span
-            animate={isFavorite ? { scale: [1, 1.3, 1] } : {}}
-            className={`material-symbols-outlined text-base sm:text-lg transition-colors ${
-              isFavorite ? "text-[#caf300]" : "group-hover:text-[#caf300]"
-            }`}
-            style={{
-              fontVariationSettings: isFavorite ? "'FILL' 1" : "'FILL' 0",
-            }}
-          >
-            favorite
-          </motion.span>
+          {isFavorite ? (
+            <FaCheckCircle className="text-base sm:text-lg text-[#caf300]" />
+          ) : (
+            <FaRegHeart
+              className={`text-base sm:text-lg transition-colors ${
+                favoriteLoading ? "" : "group-hover:text-[#caf300]"
+              }`}
+            />
+          )}
           {favoriteLoading
             ? "Processing..."
             : isFavorite
@@ -259,7 +221,7 @@ export default function ClassActions({ classData, id }) {
             className={`mt-4 p-3 border text-center text-[10px] sm:text-[11px] uppercase tracking-wider rounded-sm ${
               toast.type === "error"
                 ? "bg-red-500/10 border-red-500/40 text-red-400"
-                : "bg-[#caf300]/10 border-[#caf300]/40 text-[#caf300]"
+                : "bg-emerald-500/10 border-emerald-500/40 text-emerald-400"
             }`}
             style={{ fontFamily: "JetBrains Mono, monospace" }}
           >

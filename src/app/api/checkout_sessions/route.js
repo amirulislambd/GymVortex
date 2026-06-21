@@ -8,26 +8,28 @@ export async function POST(req) {
     const origin = headersList.get('origin')
 
     // 1. Receive the dynamic dynamic data from the request body
-    const { className, PriceAmount, classId } = await req.json()
+    const { className, classImage, PriceAmount, classId } = await req.json();
 
     // 2. Create Stripe Checkout Session dynamically
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: "usd",
             product_data: {
               name: className,
+              images: classImage ? [classImage] : [],
             },
-            unit_amount: PriceAmount * 100 // Convert dollars to cents (Stripe requirement)
+            unit_amount: PriceAmount * 100, // Convert dollars to cents (Stripe requirement)
           },
           quantity: 1,
         },
       ],
-      mode: 'payment', // Set to 'payment' for one-time purchases
+      mode: "payment", // Set to 'payment' for one-time purchases
       metadata: {
         className: className,
-        classId: classId || '', // Pass the MongoDB class ID to track in the webhook/success page
+        classId: classId || "", // Pass the MongoDB class ID to track in the webhook/success page
+        classImage: classImage,
       },
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
     });
