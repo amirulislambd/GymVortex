@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
@@ -23,7 +22,6 @@ export default function ClassActions({
   const [bookingLoading, setBookingLoading] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
-  // server থেকে আসা value sync করো
   useEffect(() => {
     setAlreadyBooked(isBooked ?? false);
     setIsFavorite(isFavoriteProp ?? false);
@@ -63,8 +61,11 @@ export default function ClassActions({
       return;
     }
 
-    // ── Optimistic update — ক্লিকের সাথে সাথে disable ──
-    setIsFavorite(true);
+    if (isFavorite) {
+      toast.success("Already saved to favorites.", { icon: "💛" });
+      return;
+    }
+
     setFavoriteLoading(true);
 
     try {
@@ -80,21 +81,15 @@ export default function ClassActions({
       });
 
       if (result?.insertedId) {
+        setIsFavorite(true); // ← success এর পরে set করো
         toast.success("Added to your favorites!");
-      } else if (
-        result?.status === 409 ||
-        result?.message?.toLowerCase().includes("already")
-      ) {
-        // Already exists — optimistic update ঠিকই আছে, শুধু toast
+      } else if (result?.message?.toLowerCase().includes("already")) {
+        setIsFavorite(true);
         toast("Already in your favorites.", { icon: "💛" });
       } else {
-        // Rollback
-        setIsFavorite(false);
         toast.error(result?.message || "Failed to add favorite.");
       }
     } catch (error) {
-      // Rollback on error
-      setIsFavorite(false);
       toast.error("Failed to update favorite. Try again.");
     } finally {
       setFavoriteLoading(false);
@@ -197,23 +192,24 @@ export default function ClassActions({
           <button
             disabled={favoriteLoading || isFavorite}
             onClick={handleToggleFavorite}
-            className={`w-full py-3 sm:py-4 border font-bold text-sm sm:text-base uppercase tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98] rounded-sm disabled:cursor-not-allowed
-              ${
-                isFavorite
-                  ? "border-[#caf300]/40 text-[#caf300]/60 bg-[#caf300]/5"
-                  : "border-white/20 text-white hover:border-[#caf300]/60 hover:text-[#caf300]"
-              }`}
+            className={`w-full py-3 sm:py-4 border font-bold text-sm sm:text-base uppercase tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98] rounded-sm disabled:cursor-not-allowed disabled:opacity-70 ${
+              isFavorite
+                ? "border-[#caf300]/40 text-[#caf300] bg-[#caf300]/5"
+                : "border-white/20 text-white hover:border-[#caf300]/60 hover:text-[#caf300]"
+            }`}
             style={{ fontFamily: "Archivo Narrow, sans-serif" }}
           >
             {favoriteLoading ? (
               <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : isFavorite ? (
               <>
-                <FaHeart className="text-[#caf300]" /> Saved to Favorites
+                <FaHeart className="text-[#caf300]" />
+                Saved to Favorites
               </>
             ) : (
               <>
-                <FaRegHeart /> Add to Favorites
+                <FaRegHeart />
+                Add to Favorites
               </>
             )}
           </button>

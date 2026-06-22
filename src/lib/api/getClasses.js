@@ -39,3 +39,10 @@ export const GetClassById = async (id) => {
     return { success: false, data: [], pagination: null };
   }
 };
+
+export const GetTrainerClasses = async (email, searchParam) => {
+  const data = await ServerFetch(
+    `trainer/class?email=${email}&search=${encodeURIComponent(searchParam)}`,
+  );
+  return data;
+};

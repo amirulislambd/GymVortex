@@ -4,19 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { FiHeart, FiArrowRight, FiTrash2, FiLock } from "react-icons/fi";
 import Image from "next/image";
+import { RemoveFavoriteClass } from "@/lib/action/favorite";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
   const [favorites, setFavorites] = useState(getMyFavorites || []);
   const [removing, setRemoving] = useState(null);
-  const [toast, setToast] = useState(null);
-  console.log("getMyFavorites:", getMyFavorites);
 
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  // Check if a class is already booked
   const isBooked = (classId) => {
     return getMyBookings?.some((b) => b.classId === classId);
   };
@@ -24,20 +18,16 @@ export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
   const handleRemove = async (favoriteId, classId) => {
     try {
       setRemoving(classId);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/${favoriteId}`,
-        { method: "DELETE" },
-      );
-      const result = await res.json();
+      const result = await RemoveFavoriteClass(favoriteId);
       if (result.success) {
         setFavorites((prev) => prev.filter((f) => f._id !== favoriteId));
-        showToast("Removed from favorites.", "success");
+        toast.success("Removed from favorites.");
       } else {
-        showToast("Failed to remove.", "error");
+        toast.error("Failed to remove.");
       }
     } catch (err) {
       console.error("Remove favorite error:", err);
-      showToast("Something went wrong.", "error");
+      toast.error("Something went wrong.");
     } finally {
       setRemoving(null);
     }
@@ -45,29 +35,64 @@ export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
 
   if (favorites.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <div className="w-16 h-16 border-2 border-[#caf300]/20 flex items-center justify-center">
-          <FiHeart size={28} className="text-[#444932]" />
+      <>
+        <Toaster position="bottom-right" />
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <div className="w-16 h-16 border-2 border-[#caf300]/20 flex items-center justify-center">
+            <FiHeart size={28} className="text-[#444932]" />
+          </div>
+          <p
+            className="text-xs text-neutral-600 uppercase tracking-widest"
+            style={{ fontFamily: "JetBrains Mono, monospace" }}
+          >
+            No favorite classes yet
+          </p>
+          <Link
+            href="/classes"
+            className="text-[10px] font-bold uppercase tracking-widest text-[#caf300] border border-[#caf300]/30 px-4 py-2 hover:bg-[#caf300]/10 transition-all"
+            style={{ fontFamily: "JetBrains Mono, monospace" }}
+          >
+            Browse Classes →
+          </Link>
         </div>
-        <p
-          className="text-xs text-neutral-600 uppercase tracking-widest"
-          style={{ fontFamily: "JetBrains Mono, monospace" }}
-        >
-          No favorite classes yet
-        </p>
-        <Link
-          href="/classes"
-          className="text-[10px] font-bold uppercase tracking-widest text-[#caf300] border border-[#caf300]/30 px-4 py-2 hover:bg-[#caf300]/10 transition-all"
-          style={{ fontFamily: "JetBrains Mono, monospace" }}
-        >
-          Browse Classes →
-        </Link>
-      </div>
+      </>
     );
   }
 
   return (
     <div className="p-4 sm:p-6 space-y-4">
+      {/* React Hot Toast */}
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#0f0f0f",
+            color: "#e5e2e1",
+            border: "1px solid rgba(202,243,0,0.3)",
+            fontFamily: "JetBrains Mono, monospace",
+            fontSize: "11px",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+          },
+          success: {
+            iconTheme: {
+              primary: "#caf300",
+              secondary: "#0f0f0f",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ff4444",
+              secondary: "#0f0f0f",
+            },
+            style: {
+              border: "1px solid rgba(255,68,68,0.3)",
+            },
+          },
+        }}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div>
@@ -112,7 +137,6 @@ export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
                   className="object-cover brightness-75 group-hover:brightness-90 group-hover:scale-105 transition-all duration-500"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
-                {/* Category badge */}
                 <div className="absolute top-3 left-3 z-10">
                   <span
                     className="text-[9px] font-bold uppercase tracking-widest px-2 py-1 bg-[#caf300] text-[#0a0a0a]"
@@ -121,7 +145,6 @@ export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
                     {item.category}
                   </span>
                 </div>
-                {/* Favorite icon */}
                 <div className="absolute top-3 right-3 z-10">
                   <FiHeart
                     size={16}
@@ -130,9 +153,9 @@ export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
                   />
                 </div>
               </div>
+
               {/* Info */}
               <div className="p-4 space-y-3">
-                {/* Title */}
                 <div>
                   <h3
                     className="text-base font-black uppercase text-white leading-tight"
@@ -165,9 +188,9 @@ export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
                     </span>
                   )}
                 </div>
+
                 {/* Buttons */}
                 <div className="flex gap-2 pt-1">
-                  {/* Remove Button */}
                   <button
                     onClick={() => handleRemove(item._id, item.classId)}
                     disabled={isRemoving}
@@ -181,7 +204,6 @@ export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
                     )}
                   </button>
 
-                  {/* Book / Already Booked Button */}
                   {alreadyBooked ? (
                     <button
                       disabled
@@ -207,33 +229,6 @@ export default function MyFavoritesClasses({ getMyFavorites, getMyBookings }) {
           );
         })}
       </div>
-
-      {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-32px)] max-w-sm">
-          <div
-            className={`border p-3 flex items-center gap-3 shadow-2xl ${
-              toast.type === "error"
-                ? "bg-red-500/10 border-red-500/40"
-                : "bg-[#0f0f0f] border-[#caf300]/30"
-            }`}
-          >
-            <div
-              className={`w-1 h-6 shrink-0 ${
-                toast.type === "error" ? "bg-red-400" : "bg-[#caf300]"
-              }`}
-            />
-            <p
-              className={`text-[10px] uppercase tracking-wider ${
-                toast.type === "error" ? "text-red-400" : "text-[#caf300]"
-              }`}
-              style={{ fontFamily: "JetBrains Mono, monospace" }}
-            >
-              {toast.message}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
