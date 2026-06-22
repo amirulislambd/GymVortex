@@ -19,7 +19,22 @@ export default function RootLayout({ children }) {
         style={{ background: "#131313", color: "#e5e2e1", minHeight: "100vh" }}
       >
         {children}
-        <Toaster />
+        <Toaster
+          position="top-center"
+          containerStyle={{
+            zIndex: 10005,
+          }}
+          toastOptions={{
+            style: {
+              background: "#0c0c0c",
+              color: "#fff",
+              border: "1px solid #27272a",
+              fontFamily: "monospace",
+              fontSize: "12px",
+              borderRadius: "0px",
+            },
+          }}
+        />
       </body>
     </html>
   );

@@ -10,7 +10,6 @@ export const ServerFetch = async (url) => {
   return await res.json();
 };
 
-
 export const authHeader = async () => {
   const token = await GetUserToken();
   const header = token ? { authorization: `Bearer ${token}` } : {};
@@ -29,6 +28,29 @@ export const ServerMutation = async (url, data, method = "POST") => {
 //   handle error
   return handleStatusCode(res);
 };
+
+
+export const ServerUpdate = async (url, data, method = "PATCH") => {
+  const res = await fetch(`${baseUrl}/api/${url}`, {
+    method: method,
+    headers: {
+      "Content-Type": "application/json",
+      ...(await authHeader()),
+    },
+    body: JSON.stringify(data),
+  });
+  //   handle error
+  return handleStatusCode(res);
+};
+
+export const ServerDelete = async (url) => {
+  const res = await fetch(`${baseUrl}/api/${url}`, {
+    method: "DELETE",
+    cache: "no-cache",
+  });
+  return await res.json();
+};
+
 
 const handleStatusCode=(res)=>{
     if(res.status===401){
