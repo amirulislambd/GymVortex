@@ -2,8 +2,6 @@ import { GetClassById } from "@/lib/api/getClasses";
 import ClassActions from "@/components/classes/ClassActions";
 import { CheckFavorite } from "@/lib/api/favorite";
 import { CheckBooking } from "@/lib/api/booking";
-import { auth } from "@/lib/auth"; // ← তোমার auth import অনুযায়ী পরিবর্তন করো
-import { headers } from "next/headers";
 import { GetUserSession } from "@/lib/core/session";
 
 const calculateEndTime = (startTime, duration) => {
@@ -45,7 +43,6 @@ export default async function ClassDetails({ params }) {
   const apiResponse = await GetClassById(id);
   const classData = apiResponse?.data || apiResponse;
 
-  // ── userEmail না থাকলে check করার দরকার নেই ──
   let isBooked = false;
   let isFavorite = false;
 
@@ -278,7 +275,6 @@ export default async function ClassDetails({ params }) {
               </button>
             </div>
 
-            {/* ── ClassActions এ boolean value pass করো ── */}
             <ClassActions
               classData={classData}
               id={id}

@@ -139,12 +139,12 @@ export default function ClassActions({
               className="font-black text-3xl sm:text-4xl md:text-5xl leading-none text-white"
               style={{ fontFamily: "Archivo Narrow, sans-serif" }}
             >
-              ${Math.floor(parseFloat(classData.price))}
-              <span
-                className="text-base sm:text-lg font-medium text-[#c5c9ac]"
-                style={{ fontFamily: "JetBrains Mono, monospace" }}
-              >
-                .{classData.price.toString().split(".")[1] || "00"}
+              ${Math.floor(parseFloat(classData?.price || 0))}
+              <span style={{ fontFamily: "JetBrains Mono, monospace" }}>
+                .
+                {parseFloat(classData?.price || 0)
+                  .toFixed(2)
+                  .split(".")[1] || "00"}
               </span>
             </p>
           </div>

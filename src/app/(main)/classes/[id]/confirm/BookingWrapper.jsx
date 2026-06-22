@@ -21,21 +21,6 @@ export default function BookingWrapper({ classData, id, booking, favorite }) {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // Check if already booked
-  useEffect(() => {
-    if (!user) return;
-    const checkBooking = async () => {
-      try {
-        if (booking) {
-          // setIsAlreadyBooked(true);
-        }
-      } catch (err) {
-        console.error("Booking status check failed:", err);
-      }
-    };
-    checkBooking();
-  }, [user, id]);
-
   const handleBookNow = async () => {
     // Auth check
     if (!user) {

@@ -1,8 +1,6 @@
 import { GetClassById } from "@/lib/api/getClasses";
 import BookingWrapper from "./BookingWrapper";
 import Link from "next/link";
-import { CheckBooking } from "@/lib/api/booking";
-import { CheckFavorite } from "@/lib/api/favorite";
 
 const DAY_SHORT = {
   0: "Sun",
@@ -28,16 +26,7 @@ export default async function ConfirmBookingPage({ params }) {
   const { id } = await params;
   const apiResponse = await GetClassById(id);
   const classData = apiResponse?.data || apiResponse;
-  const booking = await CheckBooking({
-    userEmail: classData.userEmail,
-    classId: id,
-  });
-  console.log("Booking:", booking);
-  const favorite = await CheckFavorite({
-    userEmail: classData.userEmail,
-    classId: id,
-  });
-  console.log("Favorite:", favorite);
+
   if (!classData) {
     return (
       <div className="min-h-screen bg-[#131313] flex items-center justify-center">
@@ -234,12 +223,7 @@ export default async function ConfirmBookingPage({ params }) {
         </div>
 
         {/* ── Booking Wrapper ── */}
-        <BookingWrapper
-          classData={classData}
-          id={id}
-          booking={booking}
-          favorite={favorite}
-        />
+        <BookingWrapper classData={classData} id={id} />
       </main>
     </div>
   );
