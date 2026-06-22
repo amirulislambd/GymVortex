@@ -1,10 +1,17 @@
 import { GetClassById } from "@/lib/api/getClasses";
 import BookingWrapper from "./BookingWrapper";
 import Link from "next/link";
+import { CheckBooking } from "@/lib/api/booking";
+import { CheckFavorite } from "@/lib/api/favorite";
 
 const DAY_SHORT = {
-  0: "Sun", 1: "Mon", 2: "Tue",
-  3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat",
+  0: "Sun",
+  1: "Mon",
+  2: "Tue",
+  3: "Wed",
+  4: "Thu",
+  5: "Fri",
+  6: "Sat",
 };
 
 const calculateEndTime = (startTime, duration) => {
@@ -21,7 +28,16 @@ export default async function ConfirmBookingPage({ params }) {
   const { id } = await params;
   const apiResponse = await GetClassById(id);
   const classData = apiResponse?.data || apiResponse;
-
+  const booking = await CheckBooking({
+    userEmail: classData.userEmail,
+    classId: id,
+  });
+  console.log("Booking:", booking);
+  const favorite = await CheckFavorite({
+    userEmail: classData.userEmail,
+    classId: id,
+  });
+  console.log("Favorite:", favorite);
   if (!classData) {
     return (
       <div className="min-h-screen bg-[#131313] flex items-center justify-center">
@@ -36,11 +52,12 @@ export default async function ConfirmBookingPage({ params }) {
   }
 
   const endTime = calculateEndTime(classData.time, classData.duration);
-  const formattedDays = classData.days
-    ?.slice()
-    .sort((a, b) => a - b)
-    .map((d) => DAY_SHORT[d])
-    .join(" / ") || "N/A";
+  const formattedDays =
+    classData.days
+      ?.slice()
+      .sort((a, b) => a - b)
+      .map((d) => DAY_SHORT[d])
+      .join(" / ") || "N/A";
 
   return (
     <div
@@ -57,10 +74,7 @@ export default async function ConfirmBookingPage({ params }) {
         }}
       />
       {/* Dark overlay */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none"
-       
-      />
+      <div className="fixed inset-0 z-0 pointer-events-none" />
 
       {/* ── Back Button ── */}
       <div className="relative z-10 px-4 sm:px-8 md:px-12 pt-4 sm:pt-6">
@@ -93,14 +107,12 @@ export default async function ConfirmBookingPage({ params }) {
 
       {/* ── Main Content ── */}
       <main className="relative z-10 w-full max-w-2xl mx-auto px-4 sm:px-6 py-5 sm:py-8 pb-16 space-y-4 sm:space-y-5">
-
         {/* ── Class Summary Card ── */}
         <div className="bg-[#1a1a1a]/80 backdrop-blur-xl border border-[#caf300]/20 p-4 sm:p-6 relative overflow-hidden">
           {/* Corner accent */}
           <div className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 border-[#caf300]/50 pointer-events-none" />
 
           <div className="space-y-4">
-
             {/* Title + Badge */}
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
@@ -112,7 +124,10 @@ export default async function ConfirmBookingPage({ params }) {
                 </span>
                 <h2
                   className="text-lg sm:text-xl md:text-2xl font-bold uppercase leading-tight text-white"
-                  style={{ fontFamily: "Archivo Narrow, sans-serif", wordBreak: "break-word" }}
+                  style={{
+                    fontFamily: "Archivo Narrow, sans-serif",
+                    wordBreak: "break-word",
+                  }}
                 >
                   {classData.title}
                 </h2>
@@ -158,16 +173,38 @@ export default async function ConfirmBookingPage({ params }) {
             >
               {/* Days */}
               <div className="flex items-center gap-1.5">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#caf300" strokeWidth="2" strokeLinecap="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#caf300"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
-                <span className="uppercase text-[#e5e2e1]">{formattedDays}</span>
+                <span className="uppercase text-[#e5e2e1]">
+                  {formattedDays}
+                </span>
               </div>
 
               {/* Time */}
               <div className="flex items-center gap-1.5">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#caf300" strokeWidth="2" strokeLinecap="round">
-                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#caf300"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
                 </svg>
                 <span className="uppercase text-[#e5e2e1]">
                   {classData.time} — {endTime}
@@ -176,17 +213,33 @@ export default async function ConfirmBookingPage({ params }) {
 
               {/* Duration */}
               <div className="flex items-center gap-1.5">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#caf300" strokeWidth="2" strokeLinecap="round">
-                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#caf300"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <span className="uppercase text-[#e5e2e1]">{classData.duration}</span>
+                <span className="uppercase text-[#e5e2e1]">
+                  {classData.duration}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
         {/* ── Booking Wrapper ── */}
-        <BookingWrapper classData={classData} id={id} />
+        <BookingWrapper
+          classData={classData}
+          id={id}
+          booking={booking}
+          favorite={favorite}
+        />
       </main>
     </div>
   );

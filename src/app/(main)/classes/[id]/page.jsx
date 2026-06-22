@@ -1,7 +1,11 @@
 import { GetClassById } from "@/lib/api/getClasses";
 import ClassActions from "@/components/classes/ClassActions";
+import { CheckFavorite } from "@/lib/api/favorite";
+import { CheckBooking } from "@/lib/api/booking";
+import { auth } from "@/lib/auth"; // ← তোমার auth import অনুযায়ী পরিবর্তন করো
+import { headers } from "next/headers";
+import { GetUserSession } from "@/lib/core/session";
 
-// Calculate end time
 const calculateEndTime = (startTime, duration) => {
   if (!startTime || !duration) return "TBD";
   const [hours, minutes] = startTime.split(":").map(Number);
@@ -12,7 +16,6 @@ const calculateEndTime = (startTime, duration) => {
   return `${String(endHours).padStart(2, "0")}:${String(endMinutes).padStart(2, "0")}`;
 };
 
-// Day number to name — 0=Sun, 1=Mon ... 6=Sat
 const DAY_NAMES = {
   0: "Sunday",
   1: "Monday",
@@ -22,7 +25,6 @@ const DAY_NAMES = {
   5: "Friday",
   6: "Saturday",
 };
-
 const DAY_SHORT = {
   0: "Sun",
   1: "Mon",
@@ -35,9 +37,33 @@ const DAY_SHORT = {
 
 export default async function ClassDetails({ params }) {
   const { id } = await params;
+
+  const user = await GetUserSession();
+  console.log("user:", user);
+  const userEmail = user?.email ?? null;
+
   const apiResponse = await GetClassById(id);
   const classData = apiResponse?.data || apiResponse;
-  console.log("classData", classData);
+
+  // ── userEmail না থাকলে check করার দরকার নেই ──
+  let isBooked = false;
+  let isFavorite = false;
+
+  if (userEmail) {
+    const [bookingRes, favoriteRes] = await Promise.all([
+      CheckBooking({ userEmail, classId: id }),
+      CheckFavorite({ userEmail, classId: id }),
+    ]);
+
+    // API returns: { success: true, isBooked: true/false }
+    //              { success: true, isFavorite: true/false }
+    isBooked = bookingRes?.isBooked ?? false;
+    isFavorite = favoriteRes?.isFavorite ?? false;
+  }
+
+  console.log("userEmail:", userEmail);
+  console.log("isBooked:", isBooked);
+  console.log("isFavorite:", isFavorite);
 
   if (!classData) {
     return (
@@ -53,22 +79,19 @@ export default async function ClassDetails({ params }) {
   }
 
   const endTime = calculateEndTime(classData.time, classData.duration);
-
   const formattedDays =
     classData.days
       ?.sort((a, b) => a - b)
       .map((d) => DAY_SHORT[d])
       .join(" / ") || "N/A";
-
-  // Today's day index for highlighting
-  const todayIndex = new Date().getDay(); // 0=Sun ... 6=Sat
+  const todayIndex = new Date().getDay();
 
   return (
     <div
       className="bg-[#131313] text-[#e5e2e1] min-h-screen overflow-x-hidden"
       style={{ fontFamily: "Inter, sans-serif" }}
     >
-      {/* ── Hero ── */}
+      {/* Hero */}
       <section className="relative w-full h-[50vh] sm:h-[60vh] md:h-[70vh] flex items-end overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/50 to-transparent z-10" />
@@ -81,17 +104,13 @@ export default async function ClassDetails({ params }) {
             alt={classData.title || "Class Image"}
           />
         </div>
-
         <div className="relative z-20 w-full max-w-[1440px] mx-auto px-4 sm:px-8 md:px-12 pb-8 sm:pb-12">
-          {/* Difficulty Badge */}
           <div
             className="inline-block bg-[#caf300] text-[#171e00] text-[10px] sm:text-[12px] font-bold px-3 py-1 uppercase mb-4 tracking-widest"
             style={{ fontFamily: "JetBrains Mono, monospace" }}
           >
             {classData.difficulty || "Standard"}
           </div>
-
-          {/* Title */}
           <h1
             className="font-extrabold text-3xl sm:text-5xl md:text-6xl lg:text-7xl uppercase italic leading-none mb-4 max-w-3xl tracking-tighter text-white"
             style={{ fontFamily: "Archivo Narrow, sans-serif" }}
@@ -101,8 +120,6 @@ export default async function ClassDetails({ params }) {
               {classData.title?.split(" ").slice(1).join(" ") || ""}
             </span>
           </h1>
-
-          {/* Meta info */}
           <div
             className="flex flex-wrap gap-3 sm:gap-6 items-center text-[10px] sm:text-[12px]"
             style={{ fontFamily: "JetBrains Mono, monospace" }}
@@ -127,12 +144,11 @@ export default async function ClassDetails({ params }) {
         </div>
       </section>
 
-      {/* ── Content Grid ── */}
+      {/* Content Grid */}
       <section className="max-w-[1440px] mx-auto px-4 sm:px-8 md:px-12 mt-8 sm:mt-12 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* ── Left: Description + Schedule ── */}
+          {/* Left */}
           <div className="lg:col-span-8 space-y-6">
-            {/* Class Protocol */}
             <div className="bg-[#262626]/70 backdrop-blur-xl border border-[#caf300]/10 p-5 sm:p-8">
               <h2
                 className="font-bold text-lg sm:text-2xl uppercase border-b border-[#444932]/30 pb-4 mb-6 tracking-tight text-white"
@@ -143,8 +159,6 @@ export default async function ClassDetails({ params }) {
               <p className="text-sm sm:text-base md:text-lg text-[#c5c9ac] leading-relaxed">
                 {classData.description || "No description provided."}
               </p>
-
-              {/* Stats Grid */}
               <div
                 className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-8"
                 style={{ fontFamily: "JetBrains Mono, monospace" }}
@@ -172,7 +186,6 @@ export default async function ClassDetails({ params }) {
               </div>
             </div>
 
-            {/* ── Weekly Schedule ── */}
             <div className="bg-[#262626]/70 backdrop-blur-xl border border-[#caf300]/10 p-5 sm:p-8">
               <h2
                 className="font-bold text-lg sm:text-2xl uppercase border-b border-[#444932]/30 pb-4 mb-6 tracking-tight text-white"
@@ -180,7 +193,6 @@ export default async function ClassDetails({ params }) {
               >
                 Weekly Schedule
               </h2>
-
               <div
                 className="space-y-2"
                 style={{ fontFamily: "JetBrains Mono, monospace" }}
@@ -190,23 +202,14 @@ export default async function ClassDetails({ params }) {
                   .sort((a, b) => a - b)
                   .map((dayNum) => {
                     const isToday = dayNum === todayIndex;
-                    const isFirst = dayNum === classData.days[0];
-
                     return (
                       <div
                         key={dayNum}
-                        className={`flex items-center justify-between py-3 sm:py-4 px-4 sm:px-6 border-l-4 transition-all ${
-                          isToday
-                            ? "bg-[#caf300]/5 border-[#caf300]"
-                            : "border-transparent hover:bg-white/5 hover:border-[#caf300]/30"
-                        }`}
+                        className={`flex items-center justify-between py-3 sm:py-4 px-4 sm:px-6 border-l-4 transition-all ${isToday ? "bg-[#caf300]/5 border-[#caf300]" : "border-transparent hover:bg-white/5 hover:border-[#caf300]/30"}`}
                       >
-                        {/* Day Name */}
                         <div className="flex items-center gap-2 sm:gap-3">
                           <span
-                            className={`text-sm sm:text-lg font-bold uppercase ${
-                              isToday ? "text-white" : "text-[#c5c9ac]"
-                            }`}
+                            className={`text-sm sm:text-lg font-bold uppercase ${isToday ? "text-white" : "text-[#c5c9ac]"}`}
                           >
                             {DAY_NAMES[dayNum] || "Unknown"}
                           </span>
@@ -216,14 +219,8 @@ export default async function ClassDetails({ params }) {
                             </span>
                           )}
                         </div>
-
-                        {/* Time Range */}
                         <span
-                          className={`text-[11px] sm:text-sm px-2 sm:px-3 py-1 font-bold ${
-                            isToday
-                              ? "bg-[#caf300] text-[#171e00]"
-                              : "border border-[#444932]/40 text-[#c5c9ac]"
-                          }`}
+                          className={`text-[11px] sm:text-sm px-2 sm:px-3 py-1 font-bold ${isToday ? "bg-[#caf300] text-[#171e00]" : "border border-[#444932]/40 text-[#c5c9ac]"}`}
                         >
                           {classData.time || "TBD"} — {endTime}
                         </span>
@@ -234,9 +231,8 @@ export default async function ClassDetails({ params }) {
             </div>
           </div>
 
-          {/* ── Right: Sidebar ── */}
+          {/* Right Sidebar */}
           <div className="lg:col-span-4 space-y-6">
-            {/* Trainer Card */}
             <div className="bg-[#262626]/70 backdrop-blur-xl border border-[#caf300]/10 p-5 sm:p-8">
               <h2
                 className="text-[11px] sm:text-[12px] text-[#caf300] uppercase mb-4 sm:mb-6 tracking-widest"
@@ -267,7 +263,6 @@ export default async function ClassDetails({ params }) {
                   </p>
                 </div>
               </div>
-
               <p
                 className="text-[11px] sm:text-xs text-[#c5c9ac] mb-4 sm:mb-6 italic leading-relaxed"
                 style={{ fontFamily: "JetBrains Mono, monospace" }}
@@ -275,7 +270,6 @@ export default async function ClassDetails({ params }) {
                 "Strength isn't just physical. It's the byproduct of mechanical
                 discipline and mental grit."
               </p>
-
               <button
                 className="w-full py-2.5 sm:py-3 border border-white text-white text-[11px] sm:text-[12px] uppercase hover:bg-white hover:text-black transition-all cursor-pointer font-bold tracking-wider"
                 style={{ fontFamily: "JetBrains Mono, monospace" }}
@@ -284,8 +278,13 @@ export default async function ClassDetails({ params }) {
               </button>
             </div>
 
-            {/* Class Actions */}
-            <ClassActions classData={classData} id={id} />
+            {/* ── ClassActions এ boolean value pass করো ── */}
+            <ClassActions
+              classData={classData}
+              id={id}
+              isBooked={isBooked}
+              isFavorite={isFavorite}
+            />
           </div>
         </div>
       </section>

@@ -4,7 +4,9 @@ import { GetUserToken } from "./session";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const ServerFetch = async (url) => {
-  const res = await fetch(`${baseUrl}/api/${url}`);
+  const res = await fetch(`${baseUrl}/api/${url}`, {
+    cache: "no-cache",
+  });
   return await res.json();
 };
 

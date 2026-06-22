@@ -29,21 +29,6 @@ export default async function Success({ searchParams }) {
         classImage: metadata?.classImage || "",
         stripeSessionId: id,
       });
-
-      // await fetch("http://localhost:5000/api/bookings", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     className: metadata?.className || "MOBILITY REPAIR",
-      //     priceAmount: amount_total / 100,
-      //     userEmail: customer_details?.email,
-      //     classId: metadata?.classId || "",
-      //     stripeSessionId: id,
-      //   }),
-      // });
-      // console.log("Booking successfully synced to Express Backend!");
     } catch (error) {
       console.error("Express API Call Error:", error);
     }
