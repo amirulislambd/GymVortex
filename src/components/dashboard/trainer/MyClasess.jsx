@@ -6,6 +6,7 @@ import { ServerDelete } from "@/lib/core/serverMutation";
 import { FiUsers, FiEdit2, FiTrash2, FiSearch } from "react-icons/fi";
 import DynamicDeleteModal from "../../shared/DynamicDeleteModal";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function MyClasses({ initialClasses = [] }) {
   const router = useRouter();
@@ -70,7 +71,7 @@ export default function MyClasses({ initialClasses = [] }) {
     }
   };
   const handleUpdateRedirect = (classId) => {
-    router.replace(`/dashboard/trainer/my-classes/edit/${classId}`);
+    router.replace(`/dashboard/trainer/my-classes/${classId}`);
   };
 
   const handleViewAttendees = (classId) => {
@@ -179,6 +180,31 @@ export default function MyClasses({ initialClasses = [] }) {
                         </div>
                       </td>
 
+                      <td className="p-4 font-mono text-xs">
+                        {item.status === "approved" && (
+                          <span className="inline-flex items-center bg-green-950/20 border border-emerald-500 text-emerald-400 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                            ● APPROVED
+                          </span>
+                        )}
+
+                        {item.status === "pending" && (
+                          <span className="inline-flex items-center bg-amber-950/20 border border-amber-500 text-amber-400 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase shadow-[0_0_10px_rgba(245,158,11,0.1)] animate-pulse">
+                            ○ PENDING
+                          </span>
+                        )}
+
+                        {item.status === "rejected" && (
+                          <span className="inline-flex items-center bg-red-950/20 border border-red-600 text-red-500 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase shadow-[0_0_10px_rgba(239,68,68,0.1)]">
+                            ✕ REJECTED
+                          </span>
+                        )}
+
+                        {!item.status && (
+                          <span className="inline-flex items-center bg-zinc-900 border border-zinc-700 text-zinc-500 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase">
+                            UNKNOWN
+                          </span>
+                        )}
+                      </td>
                       {/* Tactical Colorful Action Triggers */}
                       <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-2 font-mono text-[9px] font-bold">
@@ -212,7 +238,6 @@ export default function MyClasses({ initialClasses = [] }) {
               </tbody>
             </table>
           </div>
-
           {/* ─── MOBILE VIEW: COMPACT CARD LAYOUT ─── */}
           <div className="block md:hidden space-y-4">
             {initialClasses.map((item) => {
@@ -228,22 +253,37 @@ export default function MyClasses({ initialClasses = [] }) {
                   key={item._id}
                   className="border border-zinc-900 bg-[#0a0a0a] p-4 space-y-3"
                 >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={
-                        item.image ||
-                        "https://images.unsplash.com/photo-1534438327276-14e5300c3a48"
-                      }
-                      alt={item.title}
-                      className="w-12 h-12 object-cover border border-zinc-800 grayscale"
-                    />
-                    <div>
-                      <h3 className="font-mono font-bold tracking-wide uppercase text-zinc-200 text-xs">
-                        {item.title}
-                      </h3>
-                      <p className="text-[9px] font-mono tracking-wider text-zinc-500 uppercase">
-                        {item.category || "General"}
-                      </p>
+                  <div className="flx justify-baseline">
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        width={50}
+                        height={50}
+                        className="w-12 h-12 object-cover border border-zinc-800 grayscale"
+                      />
+                      <div>
+                        <h3 className="font-mono font-bold tracking-wide uppercase text-zinc-200 text-xs">
+                          {item.title}
+                        </h3>
+                        <p className="text-[9px] font-mono tracking-wider text-zinc-500 uppercase">
+                          {item.category || "General"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center text-zinc-400">
+                      <span>VERIFICATION:</span>
+                      <span
+                        className={`font-bold tracking-widest uppercase text-[9px] ${
+                          item.status === "approved"
+                            ? "text-emerald-400"
+                            : item.status === "pending"
+                              ? "text-amber-400 animate-pulse"
+                              : "text-red-500"
+                        }`}
+                      >
+                        {item.status || "UNKNOWN"}
+                      </span>
                     </div>
                   </div>
 

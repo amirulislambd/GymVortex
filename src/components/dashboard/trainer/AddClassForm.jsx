@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   CloudArrowUpIn,
@@ -26,42 +26,69 @@ import { ImSpinner9 } from "react-icons/im";
 import toast from "react-hot-toast";
 import { PostClass } from "@/lib/action/classes";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-export default function AddClassForm() {
+export default function AddClassForm({ classData }) {
   const { data: session } = authClient.useSession();
   const [isUploading, setIsUploading] = useState(false);
   const user = session?.user;
   const router = useRouter();
+  const params = usePathname();
+
+  const isEditMode = params !== "/dashboard/trainer/add-class";
+
+  // 1. Core visual synchronization for existing images
   const [previewImage, setPreviewImage] = useState("");
+
+  useEffect(() => {
+    if (isEditMode && classData?.image) {
+      setPreviewImage(classData.image);
+    }
+  }, [classData, isEditMode]);
 
   const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
+  // 2. Continuous Reactive Value Syncing via RHF 'values' property
   const {
     register,
     handleSubmit,
     control,
     setValue,
     watch,
-    reset, // Destructured reset function here
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: {
-      title: "",
-      description: "",
-      category: "Powerlifting",
-      difficulty: "Level 1 - Foundational",
-      price: "",
-      days: [],
-      time: "",
-      duration: "45 MIN",
-      capacity: "",
-      image: "",
-    },
+    // 'values' reacts dynamically to incoming async data updates, ideal for Edit contexts
+    values:
+      isEditMode && classData
+        ? {
+            title: classData.title || "",
+            description: classData.description || "",
+            category: classData.category || "Powerlifting",
+            difficulty: classData.difficulty || "Level 1 - Foundational",
+            price: classData.price || "",
+            days: classData.days || [],
+            time: classData.time || "",
+            duration: classData.duration || "45 MIN",
+            capacity: classData.capacity || "",
+            image: classData.image || "",
+          }
+        : {
+            title: "",
+            description: "",
+            category: "Powerlifting",
+            difficulty: "Level 1 - Foundational",
+            price: "",
+            days: [],
+            time: "",
+            duration: "45 MIN",
+            capacity: "",
+            image: "",
+          },
   });
 
   const availableDays = ["M", "T", "W", "T", "F", "S", "S"];
-  const selectedDays = watch("days");
+  const selectedDays = watch("days") || [];
 
   const handleDayToggle = (dayIndex) => {
     const currentDays = [...selectedDays];
@@ -102,7 +129,7 @@ export default function AddClassForm() {
       }
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Network error during image deployment.");
+      toast.error("Network error during image deployment.");
     } finally {
       setIsUploading(false);
     }
@@ -110,25 +137,32 @@ export default function AddClassForm() {
 
   const onSubmit = async (data) => {
     try {
-      const res = await PostClass({
+      // Merge updating payload or creation payloads cleanly
+      const payload = {
         ...data,
-        trainerName: user?.name || "",
-        trainerEmail: user?.email || "",
-        trainerImage: user?.image || "",
-      });
+        trainerName: user?.name || classData?.trainerName || "",
+        trainerEmail: user?.email || classData?.trainerEmail || "",
+        trainerImage: user?.image || classData?.trainerImage || "",
+      };
+
+      if (isEditMode && classData?._id) {
+        payload._id = classData._id;
+      }
+      const methodType = isEditMode ? "PUT" : "POST";
+      const res = await PostClass(payload, methodType);
 
       if (res) {
-        toast.success("Class successfully deployed.");
-        console.log("Submitting Deployment Protocol via RHF:", data);
-
-        // Clears the text inputs and state values to default metrics
+        toast.success(
+          isEditMode
+            ? "Class updated successfully."
+            : "Class successfully deployed.",
+        );
         reset();
-        // Wipes the visual media preview element
         setPreviewImage("");
         router.push("/dashboard/trainer/my-classes");
       }
     } catch (error) {
-      toast.error("Failed to Upload class.");
+      toast.error("Failed to execute database transaction.");
       console.log("Error connecting to backend:", error);
     }
   };
@@ -141,7 +175,7 @@ export default function AddClassForm() {
           Deployment Console
         </p>
         <h2 className="font-sans font-extrabold text-4xl md:text-5xl uppercase mb-4 italic tracking-tight text-white">
-          Forging Performance
+          {!isEditMode ? "Forging Performance" : "Updating Performance"}
         </h2>
         <div className="h-1 w-24 bg-[#caf300]" />
       </div>
@@ -413,13 +447,14 @@ export default function AddClassForm() {
                   control={control}
                   rules={{
                     validate: (value) =>
-                      value.length > 0 || "Select at least one active unit day",
+                      value?.length > 0 ||
+                      "Select at least one active unit day",
                   }}
                   render={({ field }) => (
                     <div>
                       <div className="grid grid-cols-7 gap-2">
                         {availableDays.map((day, idx) => {
-                          const isSelected = field.value.includes(idx);
+                          const isSelected = field.value?.includes(idx);
                           return (
                             <button
                               key={idx}
@@ -515,9 +550,10 @@ export default function AddClassForm() {
         <div className="flex flex-col sm:flex-row justify-end items-center gap-4 md:mt-12 md:pt-8 border-t border-[#444932]/20">
           <button
             type="button"
+            onClick={() => router.push("/dashboard/trainer/my-classes")}
             className="w-full sm:w-auto px-10 py-4 border-2 border-white text-white font-mono text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#131313] transition-all active:scale-[0.98] rounded-sm"
           >
-            Save Draft
+            Cancel
           </button>
 
           <button
@@ -527,12 +563,12 @@ export default function AddClassForm() {
           >
             {isSubmitting ? (
               <>
-                Deploying Protocol...{" "}
+                Processing Protocol...{" "}
                 <ImSpinner9 className="size-4 animate-spin" />
               </>
             ) : (
               <>
-                Submit for Deployment{" "}
+                {isEditMode ? "Update Class Matrix" : "Submit for Deployment"}{" "}
                 <Thunderbolt className="size-4 font-bold" />
               </>
             )}
