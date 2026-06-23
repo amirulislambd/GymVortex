@@ -1,11 +1,15 @@
-import React from 'react';
+import MyForumPosts from "@/components/forum/MyForumPosts";
+import { GetUserSession } from "@/lib/core/session";
+import React from "react";
 
-const TrainerPost = () => {
-    return (
-        <div>
-            <h1>Trainer Post</h1>
-        </div>
-    );
+const TrainerPost = async () => {
+  const trainerEmail = await GetUserSession();
+
+  return (
+    <div>
+      <MyForumPosts trainerEmail={trainerEmail.email} />
+    </div>
+  );
 };
 
 export default TrainerPost;

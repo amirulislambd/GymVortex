@@ -112,7 +112,7 @@ export default function AddForumPostForm({ postData }) {
         );
         reset();
         setPreviewImage("");
-        router.push("/dashboard/trainer/my-forum-posts");
+        router.push("/dashboard/trainer/my-posts");
       }
     } catch (error) {
       toast.error("Failed to execute database transaction.");

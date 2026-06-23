@@ -159,7 +159,7 @@ export default function AddClassForm({ classData }) {
         );
         reset();
         setPreviewImage("");
-        router.push("/dashboard/trainer/my-classes");
+        router.push(`${isEditMode ? "/dashboard/trainer/my-classes" : "/"}`);
       }
     } catch (error) {
       toast.error("Failed to execute database transaction.");
