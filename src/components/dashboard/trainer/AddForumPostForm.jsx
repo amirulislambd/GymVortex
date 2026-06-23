@@ -112,6 +112,7 @@ export default function AddForumPostForm({ postData }) {
         );
         reset();
         setPreviewImage("");
+        router.refresh();
         router.push("/dashboard/trainer/my-posts");
       }
     } catch (error) {

@@ -50,6 +50,11 @@ export default function MyForumPosts({ trainerEmail }) {
     loadPosts();
   }, [page, search]);
 
+  const updateForumPost = async (postId) => {
+    console.log("post:", postId);
+    router.push(`/dashboard/trainer/add-post/${postId}`);
+  };
+
   const handleDelete = async (postId) => {
     try {
       const res = await ServerDelete(`forumPost/${postId}`);
@@ -148,7 +153,10 @@ export default function MyForumPosts({ trainerEmail }) {
 
               {/* Action Buttons */}
               <div className="flex md:flex-col gap-2 justify-center">
-                <button className="w-full md:px-3 py-1.5 border border-[#caf300] text-[#caf300] font-mono text-[10px] font-bold uppercase rounded-sm cursor-pointer hover:bg-[#caf300]/30 hover:text-white transition-all">
+                <button
+                  onClick={() => updateForumPost(post._id)}
+                  className="w-full md:px-3 py-1.5 border border-[#caf300] text-[#caf300] font-mono text-[10px] font-bold uppercase rounded-sm cursor-pointer hover:bg-[#caf300]/30 hover:text-white transition-all"
+                >
                   Edit
                 </button>
                 <button
