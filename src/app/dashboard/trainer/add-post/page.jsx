@@ -1,10 +1,10 @@
-import AddClassForm from "@/components/dashboard/trainer/AddClassForm";
+import AddForumPostForm from "@/components/dashboard/trainer/AddForumPostForm";
 import React from "react";
 
 const AddPost = () => {
   return (
     <div>
-      <AddClassForm />
+      <AddForumPostForm />
     </div>
   );
 };
