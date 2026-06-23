@@ -21,3 +21,15 @@ export const GetMyBookings = async (email) => {
     return [];
   }
 };
+
+export const GetBookingsByClassId = async (classId) => {
+  if (!classId) return [];
+  try {
+    const result = await ServerFetch(`bookings/classId?classId=${classId}`);
+
+    return result?.success ? result.data : [];
+  } catch (error) {
+    console.error("Express API Call Error:", error);
+    return [];
+  }
+};

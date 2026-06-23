@@ -1,17 +1,26 @@
-import { NextResponse } from 'next/server'
-import { headers } from 'next/headers'
-import { stripe } from '@/lib/stripe';
+import { NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { stripe } from "@/lib/stripe";
 
 export async function POST(req) {
   try {
-    const headersList = await headers()
-    const origin = headersList.get('origin')
+    const headersList = await headers();
+    const origin = headersList.get("origin");
 
     // 1. Receive the dynamic dynamic data from the request body
-    const { className, classImage, PriceAmount, classId } = await req.json();
+    const {
+      className,
+      classImage,
+      PriceAmount,
+      classId,
+      userName,
+      userEmail,
+      userImage,
+    } = await req.json();
 
     // 2. Create Stripe Checkout Session dynamically
     const session = await stripe.checkout.sessions.create({
+      customer_email: userEmail,
       line_items: [
         {
           price_data: {
@@ -26,21 +35,22 @@ export async function POST(req) {
         },
       ],
       mode: "payment", // Set to 'payment' for one-time purchases
+
       metadata: {
         className: className,
         classId: classId || "", // Pass the MongoDB class ID to track in the webhook/success page
+        userImage: userImage,
         classImage: classImage,
       },
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
     });
 
     // 3. Return the checkout URL to the frontend for redirection
-    return NextResponse.json({ url: session.url })
-
+    return NextResponse.json({ url: session.url });
   } catch (err) {
     return NextResponse.json(
       { error: err.message },
-      { status: err.statusCode || 500 }
-    )
+      { status: err.statusCode || 500 },
+    );
   }
 }

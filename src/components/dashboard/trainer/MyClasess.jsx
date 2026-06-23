@@ -7,6 +7,8 @@ import { FiUsers, FiEdit2, FiTrash2, FiSearch } from "react-icons/fi";
 import DynamicDeleteModal from "../../shared/DynamicDeleteModal";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { GetBookingsByClassId } from "@/lib/api/booking";
+import EnrolledLIstModal from "./EnrolledLIstModal";
 
 export default function MyClasses({ initialClasses = [] }) {
   const router = useRouter();
@@ -17,6 +19,10 @@ export default function MyClasses({ initialClasses = [] }) {
 
   const [selectedItem, setSelectedItem] = useState({ id: "", title: "" });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [attendees, setAttendees] = useState([]);
+  const [isAttendModalOpen, setIsAttendModalOpen] = useState(false);
 
   // 1. Live search handler utilizing URL query parameters
   const handleSearch = (searchTerm) => {
@@ -74,8 +80,30 @@ export default function MyClasses({ initialClasses = [] }) {
     router.replace(`/dashboard/trainer/my-classes/${classId}`);
   };
 
-  const handleViewAttendees = (classId) => {
-    alert(`Syncing attendee matrix for protocol ID: ${classId}`);
+  const handleViewAttendees = async (item, e) => {
+    const classId = item?._id;
+    console.log("Fetching matrix for classId:", classId);
+
+    setIsAttendModalOpen(true);
+    setSelectedClass(item);
+    setIsLoading(true);
+
+    try {
+      const data = await GetBookingsByClassId(classId);
+      console.log("API response data:", data);
+      setAttendees(data || []);
+    } catch (error) {
+      console.error("Failed to fetch attendees:", error);
+      setAttendees([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCloseAttendModal = () => {
+    setIsAttendModalOpen(false);
+    setSelectedClass(null);
+    setAttendees([]);
   };
 
   return (
@@ -209,7 +237,7 @@ export default function MyClasses({ initialClasses = [] }) {
                       <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-2 font-mono text-[9px] font-bold">
                           <button
-                            onClick={() => handleViewAttendees(item._id)}
+                            onClick={(e) => handleViewAttendees(item, e)}
                             className="bg-transparent border border-[#caf300] text-[#caf300] hover:bg-[#caf300] hover:text-black px-2.5 py-1.5 uppercase tracking-widest flex items-center gap-1 cursor-pointer transition-all duration-200"
                           >
                             <FiUsers className="text-[11px]" /> ATTENDEES
@@ -315,7 +343,7 @@ export default function MyClasses({ initialClasses = [] }) {
                   {/* Mobile Compact Grid Button Menu */}
                   <div className="grid grid-cols-3 gap-2 font-mono text-[9px] font-bold pt-1">
                     <button
-                      onClick={() => handleViewAttendees(item._id)}
+                      onClick={(e) => handleViewAttendees(item, e)}
                       className="bg-transparent border border-[#caf300] text-[#caf300] hover:bg-[#caf300] hover:text-black py-2.5 uppercase tracking-widest flex items-center justify-center gap-1 cursor-pointer transition-all duration-200"
                     >
                       <FiUsers className="text-[11px]" /> ATTEND
@@ -349,6 +377,13 @@ export default function MyClasses({ initialClasses = [] }) {
         itemTitle={selectedItem.title}
         isDeleting={isDeleting}
         onConfirm={handleFinalDelete}
+      />
+      <EnrolledLIstModal
+        isOpen={isAttendModalOpen}
+        selectedClass={selectedClass}
+        attendees={attendees}
+        isLoading={isLoading}
+        onClose={handleCloseAttendModal}
       />
     </div>
   );

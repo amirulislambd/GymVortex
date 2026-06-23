@@ -25,6 +25,8 @@ export default async function Success({ searchParams }) {
         className: metadata?.className || "MOBILITY REPAIR",
         priceAmount: amount_total / 100,
         userEmail: customer_details?.email,
+        userName: customer_details?.name,
+        userImage: metadata?.userImage || null,
         classId: metadata?.classId || "",
         classImage: metadata?.classImage || "",
         stripeSessionId: id,
@@ -38,6 +40,7 @@ export default async function Success({ searchParams }) {
         securityHash={id}
         className={metadata?.className || "MOBILITY REPAIR"}
         priceAmount={amount_total / 100}
+        userName={customer_details?.name}
         userEmail={customer_details?.email}
         createdAt={new Date().toISOString()}
       />

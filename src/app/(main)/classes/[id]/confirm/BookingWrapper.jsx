@@ -50,6 +50,8 @@ export default function BookingWrapper({ classData, id, booking, favorite }) {
           classId: id, // Pass the original MongoDB class id
           classImage: classData?.image || "",
           userEmail: user?.email,
+          userName: user?.name,
+          userImage: user?.image,
         }),
       });
 
