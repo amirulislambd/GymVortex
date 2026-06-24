@@ -4,8 +4,3 @@ export const PostForumAction = async (data, method = "POST") => {
   const urlPath = data._id ? `forumPost/${data._id}` : "forumPost";
   return ServerMutation(urlPath, data, method);
 };
-
-export const UpdateForumAction = async (data, method = "PUT") => {
-  const urlPath = data._id ? `forumPost/${data._id}` : "forumPost";
-  return ServerMutation(urlPath, data, method);
-};
