@@ -15,13 +15,10 @@ const ManageUsers = async ({ searchParams }) => {
 
   const session = await GetUserSession();
   const adminEmail = session?.email || "";
-
   const usersData = await GetManagedUser(adminEmail, currentPage, searchQuery);
 
   const users = usersData?.users || [];
   const totalPages = usersData?.totalPages || 1;
-
-  console.log("Fetched Users for Page", currentPage, ":", users);
 
   return (
     <div className="p-4 md:p-6 min-h-screen bg-black text-zinc-100 flex flex-col gap-2">
