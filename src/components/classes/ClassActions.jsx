@@ -16,6 +16,8 @@ export default function ClassActions({
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const user = session?.user;
+  console.log("user:", user);
+  const isRestricted = user?.banned;
 
   const [isFavorite, setIsFavorite] = useState(isFavoriteProp ?? false);
   const [alreadyBooked, setAlreadyBooked] = useState(isBooked ?? false);
@@ -38,6 +40,7 @@ export default function ClassActions({
       router.push(`/login?redirect=/classes/${id}`);
       return;
     }
+
     if (alreadyBooked) {
       toast.error("You have already booked this class.");
       return;
@@ -60,9 +63,12 @@ export default function ClassActions({
       router.push(`/login?redirect=/classes/${id}`);
       return;
     }
-
+    if (user?.banned) {
+      toast.error("Action restricted by Admin.");
+      return;
+    }
     if (isFavorite) {
-      toast.success("Already saved to favorites.", { icon: "💛" });
+      toast.error("Already saved to favorites.");
       return;
     }
 
@@ -81,7 +87,7 @@ export default function ClassActions({
       });
 
       if (result?.insertedId) {
-        setIsFavorite(true); // ← success এর পরে set করো
+        setIsFavorite(true);
         toast.success("Added to your favorites!");
       } else if (result?.message?.toLowerCase().includes("already")) {
         setIsFavorite(true);

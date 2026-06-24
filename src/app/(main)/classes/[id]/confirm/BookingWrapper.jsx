@@ -192,25 +192,48 @@ export default function BookingWrapper({ classData, id, booking, favorite }) {
           <div className="space-y-3">
             <button
               onClick={() => router.push(`/login?redirect=/payment/${id}`)}
-              className="w-full bg-[#caf300] text-[#171e00] py-4 sm:py-5 uppercase font-bold tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
-              style={{ fontFamily: "Archivo Narrow, sans-serif" }}
+              className="w-full bg-[#caf300] text-[#171e00] py-4 sm:py-5 uppercase font-bold tracking-widest"
             >
               LOGIN TO BOOK
-              <span className="material-symbols-outlined text-lg">login</span>
             </button>
-            <p
-              className="text-[10px] text-center text-[#c6c6c7] uppercase tracking-wider"
-              style={{ fontFamily: "JetBrains Mono, monospace" }}
-            >
+
+            <p className="text-[10px] text-center text-[#c6c6c7] uppercase tracking-wider">
               You must be logged in to complete this booking.
             </p>
+          </div>
+        ) : user?.banned ? (
+          // Restricted User
+          <div className="space-y-3">
+            <div className="w-full bg-red-500/10 border border-red-500/40 text-red-400 py-4 sm:py-5 rounded-md flex items-center justify-center gap-2 font-bold uppercase tracking-widest">
+              <span className="material-symbols-outlined text-xl">gpp_bad</span>
+              ACCOUNT RESTRICTED
+            </div>
+
+            <div className="rounded-md border border-red-500/20 bg-red-500/5 p-4">
+              <p className="text-sm text-red-300 font-semibold mb-2">
+                Action Restricted by Admin
+              </p>
+
+              <p className="text-xs text-gray-300 leading-6">
+                Your account is currently in{" "}
+                <span className="text-red-400">Read Only Mode</span>.
+              </p>
+
+              <ul className="mt-3 space-y-1 text-xs text-gray-400">
+                <li>✅ Browse Classes</li>
+                <li>✅ View Forums</li>
+                <li>❌ Book Classes</li>
+                <li>❌ Apply as Trainer</li>
+                <li>❌ Create Forum Posts</li>
+                <li>❌ Write Comments</li>
+              </ul>
+            </div>
           </div>
         ) : isAlreadyBooked ? (
           // Already booked state
           <button
             disabled
             className="w-full bg-[#353534] text-[#c6c6c7] py-4 sm:py-5 uppercase font-bold tracking-widest opacity-50 cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
-            style={{ fontFamily: "Archivo Narrow, sans-serif" }}
           >
             ALREADY BOOKED
             <span className="material-symbols-outlined text-lg">lock</span>
@@ -223,13 +246,13 @@ export default function BookingWrapper({ classData, id, booking, favorite }) {
             className={`w-full bg-[#caf300] text-[#171e00] py-4 sm:py-5 uppercase font-bold tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm sm:text-base disabled:opacity-60 disabled:cursor-not-allowed ${
               loadingStep !== "idle" ? "brightness-50" : ""
             }`}
-            style={{ fontFamily: "Archivo Narrow, sans-serif" }}
           >
             {loadingStep === "checking"
               ? "VERIFYING..."
               : loadingStep === "redirecting"
                 ? "REDIRECTING..."
                 : "BOOK NOW"}
+
             <span className="material-symbols-outlined text-lg">
               {loadingStep !== "idle" ? "sync" : "bolt"}
             </span>

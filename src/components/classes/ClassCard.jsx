@@ -4,12 +4,17 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "@gravity-ui/icons";
+import { authClient } from "@/lib/auth-client";
 
 export default function ClassCard({ item }) {
   if (!item) return null;
-
   const maxSeats = parseInt(item?.capacity) || 0;
   const bookedSeats = parseInt(item?.bookingCount) || 0;
+
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  const isRestricted = user?.banned;
+
   const isFull = bookedSeats >= maxSeats;
 
   const seatPercentage = maxSeats > 0 ? (bookedSeats / maxSeats) * 100 : 0;

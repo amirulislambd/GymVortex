@@ -196,7 +196,7 @@ export default function ApplicationStatus({
             <button
               type="button"
               onClick={handleReApply}
-              className="bg-[#caf300] text-[#171e00] px-8 py-3 font-bold uppercase hover:brightness-110 transition cursor-pointer select-none hover:scale-105 active:scale-95 disabled:opacity-50 transition-all duration-700 "
+              className="bg-[#caf300] text-[#171e00] px-8 py-3 font-bold uppercase hover:brightness-110 select-none hover:scale-105 active:scale-95 disabled:opacity-50 transition-all duration-700 "
             >
               Re Apply
             </button>

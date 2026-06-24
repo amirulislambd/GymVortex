@@ -97,7 +97,7 @@ export default function AllClasses() {
     const loadClassesData = async () => {
       try {
         const res = await GetClasses({
-          page: 1,
+          page: currentPageUrl,
           limit: 12,
           category: "All",
           status: "approved",
