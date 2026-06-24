@@ -1,12 +1,35 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
 
-export default function OverviewHeader({ rank = "TITAN II", streak = 12 }) {
+export default function OverviewHeader({ userMetricsData }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
+  // 1. Destructure backend metrics with safe defaults to prevent runtime crashes
+  const {
+    version = "V2.4",
+    username = user?.name?.toUpperCase().replace(/\s+/g, "_") + "_01" ||
+      "ATHLETE_01",
+    rank = "TITAN II",
+    streak = 12,
+  } = userMetricsData || {};
+
+  // Helper function to safely split the rank text into two parts for styling
+  const renderRank = (fullRank) => {
+    const parts = fullRank.split(" ");
+    if (parts.length > 1) {
+      return (
+        <>
+          {parts[0]}{" "}
+          <span className="text-[#caf300]">{parts.slice(1).join(" ")}</span>
+        </>
+      );
+    }
+    return <span className="text-[#caf300]">{fullRank}</span>;
+  };
+
   return (
-    <div className="w-full bg-[#0f0f0f] border border-neutral-900">
+    <div className="w-full bg-[#0f0f0f] border border-neutral-900 rounded-md">
       {/* Mobile Layout */}
       <div className="block md:hidden">
         {/* System Status Bar */}
@@ -32,7 +55,7 @@ export default function OverviewHeader({ rank = "TITAN II", streak = 12 }) {
             style={{ fontFamily: "Archivo Narrow, sans-serif" }}
           >
             <span className="text-white">TERMINAL </span>
-            <span className="text-[#caf300]">V3.0</span>
+            <span className="text-[#caf300]">{version}</span>
           </h1>
         </div>
 
@@ -49,8 +72,7 @@ export default function OverviewHeader({ rank = "TITAN II", streak = 12 }) {
               className="text-2xl font-black uppercase text-white leading-none"
               style={{ fontFamily: "Archivo Narrow, sans-serif" }}
             >
-              {rank.split(" ")[0]}{" "}
-              <span className="text-[#caf300]">{rank.split(" ")[1]}</span>
+              {renderRank(rank)}
             </p>
           </div>
           <div className="px-4 py-3">
@@ -78,18 +100,14 @@ export default function OverviewHeader({ rank = "TITAN II", streak = 12 }) {
             style={{ fontFamily: "Archivo Narrow, sans-serif" }}
           >
             <span className="text-white">TERMINAL </span>
-            <span className="text-[#caf300]">V2.4</span>
+            <span className="text-[#caf300]">{version}</span>
           </h1>
           <p
             className="text-[10px] font-bold uppercase tracking-widest text-neutral-600"
             style={{ fontFamily: "JetBrains Mono, monospace" }}
           >
             PERFORMANCE PROTOCOL INITIALIZED /{" "}
-            <span className="text-neutral-400">
-              USER:{" "}
-              {user?.name?.toUpperCase().replace(/\s+/g, "_") + "_01" ||
-                "ATHLETE_01"}
-            </span>
+            <span className="text-neutral-400">USER: {username}</span>
           </p>
         </div>
 
@@ -105,8 +123,7 @@ export default function OverviewHeader({ rank = "TITAN II", streak = 12 }) {
               className="text-2xl md:text-3xl font-black uppercase text-white leading-tight"
               style={{ fontFamily: "Archivo Narrow, sans-serif" }}
             >
-              {rank.split(" ")[0]}{" "}
-              <span className="text-[#caf300]">{rank.split(" ")[1]}</span>
+              {renderRank(rank)}
             </span>
           </div>
           <div className="w-px h-8 bg-neutral-800" />

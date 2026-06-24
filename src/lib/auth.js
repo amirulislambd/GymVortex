@@ -27,6 +27,14 @@ export const auth = betterAuth({
         type: "string",
         defaultValue: "free_user",
       },
+      streak: {
+        type: "number",
+        defaultValue: 0,
+      },
+      rank: {
+        type: "string",
+        defaultValue: "RECRUIT",
+      },
     },
   },
   plugins: [admin()],

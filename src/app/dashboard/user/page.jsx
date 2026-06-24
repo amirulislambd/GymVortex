@@ -6,22 +6,50 @@ import FavoriteRegimes from "@/components/dashboard/user/FavoriteRegimes";
 import ForgeCommunity from "@/components/dashboard/user/ForgeCommunity";
 import { GetApplicationById } from "@/lib/api/applications";
 import { GetUserSession } from "@/lib/core/session";
+import UserStatsCards from "@/components/dashboard/user/UserStatsCards";
+import UserProfileStatus from "@/components/dashboard/user/UserProfileStatus";
+import { GetUserMetrics, UpdateUserActivity } from "@/lib/api/dashboard";
 
 export const metadata = { title: "Dashboard — GymVortex" };
 
 export default async function UserOverviewPage() {
   const user = await GetUserSession();
+
+  // 1. First, update the user's daily activity, streak, and rank in the database
+  await UpdateUserActivity(user.email);
+
+  // 2. Then, fetch the fresh, newly updated metrics from the database
+  const userMetrics = await GetUserMetrics(user.email);
+  console.log("Fresh userMetrics from server:", userMetrics);
+
+  // 3. Extract banner data safely from the fresh metrics response
+  const userMetricsData = userMetrics?.banner;
+  console.log("userMetricsData to be passed:", userMetricsData);
+
+  // Fetch trainer application status
   const applicationStatus = await GetApplicationById(user.id);
   const application = applicationStatus?.data;
   console.log("application:", application);
 
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
-      <OverviewHeader rank="TITAN II" streak={12} />
+      {/* OverviewHeader will now receive 100% updated real-time data */}
+      <OverviewHeader userMetricsData={userMetricsData} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
-        <WorkoutProgress />
-        <UpcomingSessions />
+        <div className="space-y-4 flex flex-col">
+          <div className="md:hidden">
+            <UserProfileStatus userProfile={user} />
+          </div>
+          <UserStatsCards stats={userMetrics?.stats} />
+          <WorkoutProgress />
+        </div>
+        <div className="space-y-4 flex flex-col">
+          <div className="hidden md:block">
+            <UserProfileStatus userProfile={user} />
+          </div>
+          <UpcomingSessions />
+        </div>
       </div>
 
       {application?.status === "pending" && (
