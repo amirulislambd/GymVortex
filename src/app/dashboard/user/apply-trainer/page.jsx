@@ -18,6 +18,7 @@ export default async function TrainerApplicationPage() {
 
   const res = await GetApplicationById(userInfo.id);
   const application = res?.data;
+  const user = await GetUserSession();
 
   console.log("application:", application);
   console.log("userInfo:", userInfo.banned);
@@ -27,11 +28,11 @@ export default async function TrainerApplicationPage() {
       {isBanned ? (
         <RestrictedAccess />
       ) : (
-        // এখানে overflow-hidden যোগ করা হয়েছে যাতে স্ক্রলবার না আসে
         <div className="bg-[#131313] text-[#e5e2e1] h-screen overflow-hidden font-sans">
           {application ? (
             <ApplicationStatus
-              status={application.status}
+              email={user.email}
+              application={application}
               userImage={userProfile.image}
             />
           ) : (

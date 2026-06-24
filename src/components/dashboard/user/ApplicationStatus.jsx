@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
+import { CiCircleRemove } from "react-icons/ci";
+import { LiaHandPointLeftSolid } from "react-icons/lia";
+import { DeleteTrainerApplication } from "@/lib/action/application";
+import { useRouter } from "next/navigation";
 
 const BACKGROUND_IMAGES = {
   pending:
@@ -13,10 +17,13 @@ const BACKGROUND_IMAGES = {
 };
 
 export default function ApplicationStatus({
-  status = "pending",
+  application = "pending",
   submittedAt,
   reviewWindowHours = 48,
+  email,
 }) {
+  const { status, adminFeedback } = application || {};
+  console.log("application:", status);
   const bgUrl = BACKGROUND_IMAGES[status] || BACKGROUND_IMAGES.pending;
 
   const deadline = useMemo(() => {
@@ -29,6 +36,7 @@ export default function ApplicationStatus({
   const getRemaining = () =>
     Math.max(0, Math.floor((deadline - Date.now()) / 1000));
   const [timeLeft, setTimeLeft] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     if (status !== "pending") return;
@@ -44,6 +52,18 @@ export default function ApplicationStatus({
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
 
+  const handleReApply = async () => {
+    try {
+      const res = await DeleteTrainerApplication(application._id);
+
+      if (res?.success) {
+        router.refresh();
+        router.replace("/dashboard/user/apply-trainer");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="relative w-full p-4 md:p-6 overflow-hidden">
       <div
@@ -165,9 +185,21 @@ export default function ApplicationStatus({
                 REJECTED
               </span>
             </div>
-            <div className="bg-[#1f1110] border-l-2 border-[#ff7b72] p-4 text-xs text-[#ffb4ab] font-mono">
-              "INCOMPLETE DOCUMENTATION: PLEASE UPLOAD CURRENT CERTIFICATION."
+            <div className="relative bg-[#1f1110] border-l-2 border-[#ff7b72] p-4 text-xs text-[#ffb4ab] font-mono">
+              <span className="absolute top-0 right-2 text-[#ff7b72] text-lg md:text-4xl -rotate-12 animate-bounce">
+                <LiaHandPointLeftSolid />
+              </span>
+              {adminFeedback
+                ? `adminFeedback: ${adminFeedback}`
+                : "INCOMPLETE DOCUMENTATION: PLEASE UPLOAD CURRENT CERTIFICATION."}
             </div>
+            <button
+              type="button"
+              onClick={handleReApply}
+              className="bg-[#caf300] text-[#171e00] px-8 py-3 font-bold uppercase hover:brightness-110 transition cursor-pointer select-none hover:scale-105 active:scale-95 disabled:opacity-50 transition-all duration-700 "
+            >
+              Re Apply
+            </button>
           </div>
         )}
       </motion.main>

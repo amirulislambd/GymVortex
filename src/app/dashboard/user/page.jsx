@@ -52,9 +52,7 @@ export default async function UserOverviewPage() {
         </div>
       </div>
 
-      {application?.status === "pending" && (
-        <TrainerApplicationStatus cardData={application} />
-      )}
+      {application && <TrainerApplicationStatus cardData={application} />}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FavoriteRegimes />
