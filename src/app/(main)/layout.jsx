@@ -6,7 +6,9 @@ export default function MainLayout({ children }) {
     <>
       <div>
         <Navbar />
-        <main className="min-h-screen bg-[#0d0d0d] md:pt-14">{children}</main>
+        <main className="min-h-screen bg-[#0d0d0d] md:pt-14 max-w-[1440px] mx-auto px-2 md:px-4">
+          {children}
+        </main>
         <Footer />
       </div>
     </>

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ArrowRight } from "@gravity-ui/icons";
 
 export default function ClassCard({ item }) {
@@ -11,86 +12,133 @@ export default function ClassCard({ item }) {
   const bookedSeats = parseInt(item?.bookingCount) || 0;
   const isFull = bookedSeats >= maxSeats;
 
+  const seatPercentage = maxSeats > 0 ? (bookedSeats / maxSeats) * 100 : 0;
+
   return (
-    <div className="bg-[#1c1b1b]/80 backdrop-blur-md border border-[#444932]/30 flex flex-col group overflow-hidden rounded-sm transition-all duration-300 hover:border-[#caf300]/40 hover:shadow-[0_0_20px_rgba(202,243,0,0.03)]">
-      {/* Media Asset Header Box */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#0e0e0e] shrink-0">
-        <img
+    <motion.div
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.35 }}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#111111] backdrop-blur-xl transition-all duration-500 hover:border-[#caf300]/40 hover:shadow-[0_0_40px_rgba(202,243,0,0.08)]"
+    >
+      {/* Glow */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700 bg-[radial-gradient(circle_at_top,rgba(202,243,0,0.08),transparent_60%)] pointer-events-none" />
+
+      {/* Image */}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <motion.img
+          whileHover={{ scale: 1.08 }}
+          transition={{ duration: 0.7 }}
           src={item?.image || "https://i.ibb.co/NnYqc09c/screen.png"}
-          alt={item?.title || "Class Image"}
-          className="w-full h-full object-cover transition-transform duration-700 ease-out grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+          alt={item?.title}
+          className="w-full h-full object-cover"
         />
 
-        {/* Floating Identity Badges */}
-        <div className="absolute top-4 left-4 flex gap-2 items-center z-10">
-          <span className="bg-[#caf300] text-[#171e00] text-[10px] font-mono font-black px-2.5 py-0.5 uppercase tracking-wider rounded-sm shadow-sm">
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+          <span className="bg-[#caf300] text-black text-[10px] font-black uppercase px-3 py-1 rounded-full">
             {item?.category || "N/A"}
           </span>
+
           {isFull && (
-            <span className="bg-red-600 text-white text-[10px] font-mono font-black px-2.5 py-0.5 uppercase tracking-wider rounded-sm shadow-sm animate-pulse">
-              FULL
+            <span className="bg-red-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full animate-pulse">
+              Full
             </span>
           )}
         </div>
-
-        {/* Ambient Dark Bottom Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1c1b1b] via-transparent to-transparent opacity-60" />
       </div>
 
-      {/* Cyberpunk Accent Divider Line */}
-      <div className="w-full h-[2px] bg-gradient-to-r from-[#caf300] via-[#b0d500] to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-300 shrink-0" />
+      {/* Content */}
+      <div className="p-5 flex flex-col flex-1">
+        {/* Title + Price */}
+        <div className="flex justify-between items-start gap-3">
+          <h3 className="text-white font-black text-lg uppercase leading-tight line-clamp-2 group-hover:text-[#caf300] transition-colors duration-500">
+            {item?.title || "Untitled Class"}
+          </h3>
 
-      {/* Meta Content Ledger Layer */}
-      <div className="p-5 flex flex-col flex-grow justify-between bg-gradient-to-b from-transparent to-[#131313]/40">
-        {/* Core Metadata Pipeline Info */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-start gap-3">
-            <h3 className="font-sans font-black text-lg md:text-xl uppercase leading-tight text-white tracking-tight group-hover:text-[#caf300] transition-colors duration-300 line-clamp-2">
-              {item?.title || "Untitled Class"}
-            </h3>
-            <span className="font-mono text-sm md:text-base font-black text-[#caf300] shrink-0 drop-shadow-[0_0_10px_rgba(202,243,0,0.1)]">
-              ${parseFloat(item?.price || 0).toFixed(2)}
-            </span>
-          </div>
+          <span className="text-[#caf300] font-black text-base shrink-0">
+            ${parseFloat(item?.price || 0).toFixed(2)}
+          </span>
+        </div>
 
-          {/* Technical Profile Link Architecture */}
-          <div className="flex items-center gap-2.5 border-t border-[#444932]/10 pt-3">
-            <div className="w-6 h-6 rounded-full bg-[#252524] overflow-hidden border border-[#caf300]/20 shrink-0 shadow-inner">
-              <img
-                className="w-full h-full object-cover"
-                src={
-                  item?.trainerImage || "https://i.ibb.co/NnYqc09c/screen.png"
-                }
-                alt={item?.trainerName || "Trainer"}
-              />
-            </div>
-            <span className="font-mono text-[10px] tracking-wider text-[#8f9378] uppercase truncate">
-              COACH:{" "}
-              <span className="text-[#e5e2e1] font-bold font-sans text-xs lowercase first-letter:uppercase">
+        {/* Extra Info */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          <span className="px-2 py-1 rounded-full bg-white/5 text-neutral-400 text-[10px] font-medium">
+            ⏱ {item?.duration || "60 MIN"}
+          </span>
+
+          <span className="px-2 py-1 rounded-full bg-white/5 text-neutral-400 text-[10px] font-medium">
+            🕒 {item?.time || "08:00"}
+          </span>
+
+          <span className="px-2 py-1 rounded-full bg-white/5 text-neutral-400 text-[10px] font-medium truncate max-w-[140px]">
+            {item?.difficulty || "Beginner"}
+          </span>
+        </div>
+
+        {/* Trainer */}
+        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/10">
+          <img
+            src={item?.trainerImage || "https://i.ibb.co/NnYqc09c/screen.png"}
+            alt={item?.trainerName}
+            className="w-8 h-8 rounded-full object-cover border border-[#caf300]/30"
+          />
+
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-wider text-neutral-500">
+              Coach
+            </p>
+
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#caf300]" />
+
+              <p className="text-white text-sm font-semibold truncate">
                 {item?.trainerName || "Expert Trainer"}
-              </span>
-            </span>
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Industrial Action CTA Trigger Box */}
-        <div className="mt-6 pt-2">
+        {/* Seats */}
+        <div className="mt-4">
+          <div className="flex justify-between text-[10px] text-neutral-500 mb-2">
+            <span>Available Seats</span>
+
+            <span>
+              {bookedSeats}/{maxSeats}
+            </span>
+          </div>
+
+          <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${seatPercentage}%` }}
+              transition={{ duration: 1 }}
+              className="h-full bg-[#caf300] rounded-full"
+            />
+          </div>
+        </div>
+
+        {/* Button */}
+        <div className="mt-auto pt-5">
           <Link
             href={`/classes/${item?._id}`}
-            className={`w-full h-11 font-mono text-[11px] font-bold uppercase tracking-widest text-center flex items-center justify-center gap-2 border border-[#caf300]/20 rounded-sm cursor-pointer transition-all duration-300 ${
+            className={`w-full min-h-[46px] rounded-xl flex items-center justify-center gap-2 font-bold uppercase text-xs tracking-widest transition-all duration-500 ${
               isFull
-                ? "bg-red-950/10 text-red-400/80 border-red-900/30 cursor-not-allowed hover:bg-red-950/20"
-                : "bg-transparent text-[#e5e2e1] hover:bg-[#caf300] hover:text-[#171e00] hover:border-[#caf300] shadow-[inset_0_0_10px_rgba(202,243,0,0.01)]"
+                ? "bg-red-500/10 border border-red-500/20 text-red-400 cursor-not-allowed"
+                : "bg-[#caf300] text-black hover:shadow-[0_0_25px_rgba(202,243,0,0.35)] hover:scale-[1.02]"
             }`}
             style={{ pointerEvents: isFull ? "none" : "auto" }}
           >
             <span>{isFull ? "Join Waitlist" : "View Details"}</span>
-            <span className="transform transition-transform duration-300 group-hover:translate-x-1 shrink-0 flex items-center justify-center">
-              <ArrowRight className="w-3.5 h-3.5" />
-            </span>
+
+            {!isFull && (
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            )}
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
