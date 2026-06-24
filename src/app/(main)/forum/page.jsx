@@ -1,5 +1,6 @@
 import ForumPostCard from "@/components/forum/ForumPostCard";
 import { GetMyForumPosts } from "@/lib/api/forumPostActions";
+import { GetUserSession } from "@/lib/core/session";
 import React from "react";
 
 const CommunityForum = async ({ searchParams }) => {
@@ -7,6 +8,7 @@ const CommunityForum = async ({ searchParams }) => {
   const page = searchParams.page || 1;
   const search = searchParams.search || "";
 
+  const user = await GetUserSession();
   // Fetching the response
   const response = await GetMyForumPosts(undefined, page, 9, search);
   const posts = response?.data || [];
@@ -20,7 +22,7 @@ const CommunityForum = async ({ searchParams }) => {
       {/* Grid Layout to match your design */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {posts.map((post) => (
-          <ForumPostCard key={post._id} post={post} />
+          <ForumPostCard key={post._id} post={post} user={user} />
         ))}
       </div>
     </div>

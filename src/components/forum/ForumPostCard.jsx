@@ -12,7 +12,7 @@ import {
   FiArrowRight,
 } from "react-icons/fi";
 
-const ForumPostCard = ({ post }) => {
+const ForumPostCard = ({ post, user }) => {
   const likesCount = post?.likes?.length || 0;
   const dislikesCount = post?.dislikes?.length || 0;
 
