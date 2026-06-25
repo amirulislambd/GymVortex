@@ -20,11 +20,12 @@ import {
   LikePostAction,
   DislikePostAction,
   DeleteCommentAction,
+  DeleteReplyAction,
+  UpdateReplyAction,
 } from "@/lib/action/forumAction";
 import CommentList from "./CommentList";
 
 export default function ForumPostDetails({ post, user, comments = [] }) {
-
   const router = useRouter();
   const {
     register,
@@ -117,9 +118,9 @@ export default function ForumPostDetails({ post, user, comments = [] }) {
   const handleDeleteComment = async (commentId) => {
     try {
       const result = await DeleteCommentAction(commentId);
-  
+
       console.log(result);
-  
+
       if (result?.success) {
         toast.success("Comment deleted");
         router.refresh();
@@ -131,7 +132,35 @@ export default function ForumPostDetails({ post, user, comments = [] }) {
       toast.error("Something went wrong");
     }
   };
+  const handleUpdateReply = async (commentId, replyId, content) => {
+    try {
+      const result = await UpdateReplyAction(commentId, replyId, { content });
 
+      if (result?.success) {
+        toast.success("Reply updated");
+        router.refresh();
+      } else {
+        toast.error(result?.message || "Failed to update reply");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
+
+  const handleDeleteReply = async (commentId, replyId) => {
+    try {
+      const result = await DeleteReplyAction(commentId, replyId);
+
+      if (result?.success) {
+        toast.success("Reply deleted");
+        router.refresh();
+      } else {
+        toast.error(result?.message || "Failed to delete reply");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
   return (
     <section className="min-h-screen bg-[#090909]">
       {/* HERO */}
@@ -279,6 +308,8 @@ export default function ForumPostDetails({ post, user, comments = [] }) {
                 currentUser={user}
                 onUpdate={handleUpdateComment}
                 onDelete={handleDeleteComment}
+                onReplyUpdate={handleUpdateReply}
+                onReplyDelete={handleDeleteReply}
               />
             </div>
           </div>

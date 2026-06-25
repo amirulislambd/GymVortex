@@ -22,6 +22,16 @@ export const DeleteCommentAction = async (id) => {
 export const ReplyCommentAction = async (id, data) => {
   return ServerMutation(`comments/${id}/reply`, data);
 };
+export const UpdateReplyAction = async (commentId, replyId, data) => {
+  return ServerMutation(`comments/${commentId}/reply/${replyId}`, data, "PUT");
+};
+
+export const DeleteReplyAction = async (commentId, replyId) => {
+  return ServerDelete(`comments/${commentId}/reply/${replyId}`);
+};
+
+
+
 
 export const LikePostAction = async (id, userEmail) => {
   return ServerUpdate(`forumPost/${id}/like`, { userEmail });

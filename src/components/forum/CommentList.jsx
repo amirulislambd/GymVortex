@@ -7,13 +7,13 @@ export default function CommentList({
   currentUser,
   onUpdate,
   onDelete,
+  onReplyUpdate,
+  onReplyDelete,
 }) {
   if (!comments?.length) {
     return (
       <div className="bg-[#111111] border border-white/10 rounded-2xl p-8 text-center">
-        <p className="text-neutral-500">
-          No comments yet.
-        </p>
+        <p className="text-neutral-500">No comments yet.</p>
       </div>
     );
   }
@@ -27,6 +27,8 @@ export default function CommentList({
           currentUser={currentUser}
           onUpdate={onUpdate}
           onDelete={onDelete}
+          onReplyUpdate={onReplyUpdate}
+          onReplyDelete={onReplyDelete}
         />
       ))}
     </div>

@@ -18,6 +18,8 @@ export default function CommentCard({
   currentUser,
   onUpdate,
   onDelete,
+  onReplyUpdate,
+  onReplyDelete,
 }) {
   const router = useRouter();
 
@@ -26,6 +28,8 @@ export default function CommentCard({
   const [showReply, setShowReply] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [replyLoading, setReplyLoading] = useState(false);
+  const [editingReplyId, setEditingReplyId] = useState(null);
+  const [replyEditText, setReplyEditText] = useState("");
 
   const isOwner = String(currentUser?.id) === String(comment?.userId);
 
@@ -41,9 +45,10 @@ export default function CommentCard({
 
       const result = await ReplyCommentAction(comment._id, {
         content: replyText,
-        authorName: currentUser?.name,
-        authorImage: currentUser?.image,
-        userEmail: currentUser?.email,
+        userId: currentUser.id,
+        authorName: currentUser.name,
+        authorImage: currentUser.image,
+        userEmail: currentUser.email,
       });
 
       if (result?.success) {
@@ -71,9 +76,7 @@ export default function CommentCard({
           />
 
           <div>
-            <h4 className="text-white font-semibold">
-              {comment.authorName}
-            </h4>
+            <h4 className="text-white font-semibold">{comment.authorName}</h4>
 
             <p className="text-xs text-neutral-500">
               {new Date(comment.createdAt).toLocaleString()}
@@ -138,9 +141,7 @@ export default function CommentCard({
           </div>
         </div>
       ) : (
-        <p className="mt-4 text-neutral-300 leading-7">
-          {comment.content}
-        </p>
+        <p className="mt-4 text-neutral-300 leading-7">{comment.content}</p>
       )}
 
       {/* Reply Button */}
@@ -178,29 +179,95 @@ export default function CommentCard({
       {/* Replies */}
       {comment.replies?.length > 0 && (
         <div className="mt-5 pl-4 border-l-2 border-[#caf300]/20 space-y-3">
-          {comment.replies.map((reply, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <img
-                src={reply.authorImage || "/default-avatar.png"}
-                alt={reply.authorName}
-                className="w-7 h-7 rounded-full object-cover"
-              />
+          {comment.replies.map((reply, i) => {
+            const isReplyOwner =
+              String(currentUser?.id) === String(reply?.userId);
 
-              <div>
-                <p className="text-white text-sm font-semibold">
-                  {reply.authorName}
-                </p>
+            return (
+              <div key={i} className="flex items-start gap-3">
+                <img
+                  src={reply.authorImage || "/default-avatar.png"}
+                  alt={reply.authorName}
+                  className="w-7 h-7 rounded-full object-cover"
+                />
 
-                <p className="text-neutral-400 text-sm">
-                  {reply.content}
-                </p>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <p className="text-white text-sm font-semibold">
+                      {reply.authorName}
+                    </p>
 
-                <p className="text-neutral-600 text-xs mt-1">
-                  {new Date(reply.createdAt).toLocaleString()}
-                </p>
+                    {isReplyOwner && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingReplyId(reply.replyId);
+                            setReplyEditText(reply.content);
+                          }}
+                          className="text-[#caf300]"
+                        >
+                          <FiEdit2 size={14} />
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            onReplyDelete(comment._id, reply.replyId)
+                          }
+                          className="text-red-400"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {editingReplyId === reply.replyId ? (
+                    <>
+                      <textarea
+                        value={replyEditText}
+                        onChange={(e) => setReplyEditText(e.target.value)}
+                        className="w-full mt-2 bg-[#090909] border border-white/10 rounded-lg p-2 text-white text-sm"
+                      />
+
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={async () => {
+                            await onReplyUpdate(
+                              comment._id,
+                              reply.replyId,
+                              replyEditText,
+                            );
+                            setEditingReplyId(null);
+                          }}
+                          className="text-[#caf300]"
+                        >
+                          <FiCheck size={15} />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setEditingReplyId(null);
+                            setReplyEditText("");
+                          }}
+                          className="text-red-400"
+                        >
+                          <FiX size={15} />
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-neutral-400 text-sm mt-1">
+                      {reply.content}
+                    </p>
+                  )}
+
+                  <p className="text-neutral-600 text-xs mt-1">
+                    {new Date(reply.createdAt).toLocaleString()}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
