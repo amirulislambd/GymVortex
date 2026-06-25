@@ -6,9 +6,9 @@ import { FiPlus } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
 
 const NAV_ROUTES = [
-  { href: "/dashboard/user", label: "Dashboard" },
-  { href: "/dashboard/user/booked-classes", label: "Booked Classes" },
-  { href: "/dashboard/user/favorites", label: "Favorites" },
+  { href: "/dashboard/user", label: "" },
+  { href: "/dashboard/user/booked-classes", label: "" },
+  { href: "/dashboard/user/favorites", label: "" },
 ];
 
 export default function Navbar({ onMenuToggle }) {
@@ -32,7 +32,7 @@ export default function Navbar({ onMenuToggle }) {
 
           <Link href="/">
             <h1
-              className="font-black text-lg md:text-2xl tracking-widest text-[#caf300]"
+              className="font-bold md:font-extrabold text-lg md:text-4xl tracking-widest text-[#caf300] "
               style={{ fontFamily: "Archivo Narrow, sans-serif" }}
             >
               GYMVORTEX
