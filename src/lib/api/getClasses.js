@@ -13,6 +13,11 @@ export const GetClasses = async (params) => {
       if (params.search) {
         queryParams.append("search", params.search);
       }
+
+      if (params.status) {
+        queryParams.append("status", params.status);
+      }
+
       if (params.category && params.category !== "All") {
         queryParams.append("category", params.category);
       }
@@ -30,6 +35,7 @@ export const GetClasses = async (params) => {
     return { success: false, data: [], pagination: null };
   }
 };
+
 export const GetClassById = async (id) => {
   try {
     const data = await ServerFetch(`classes/${id}`);

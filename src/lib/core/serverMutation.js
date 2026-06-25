@@ -25,10 +25,9 @@ export const ServerMutation = async (url, data, method = "POST") => {
     },
     body: JSON.stringify(data),
   });
-//   handle error
+  //   handle error
   return handleStatusCode(res);
 };
-
 
 export const ServerUpdate = async (url, data, method = "PATCH") => {
   const res = await fetch(`${baseUrl}/api/${url}`, {
@@ -51,13 +50,12 @@ export const ServerDelete = async (url) => {
   return await res.json();
 };
 
-
-const handleStatusCode=(res)=>{
-    if(res.status===401){
-        redirect('/unauthorized');
-    }
-    if(res.status===403){
-        redirect('/forbidden');
-    }
-    return res.json();
-}
+const handleStatusCode = (res) => {
+  if (res.status === 401) {
+    redirect("/unauthorized");
+  }
+  if (res.status === 403) {
+    redirect("/forbidden");
+  }
+  return res.json();
+};

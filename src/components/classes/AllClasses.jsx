@@ -12,8 +12,9 @@ export default function AllClasses() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Active parameter synchronizers from URL query params
+  //  Active parameter synchronizers from URL query params
   const currentSearchUrl = searchParams.get("search") || "";
+  const currentStatusUrl = searchParams.get("status") || "ALL";
   const currentCategoryUrl = searchParams.get("category") || "";
   const currentPageUrl = parseInt(searchParams.get("page")) || 1;
   const currentDifficultyUrl = searchParams.get("difficulty") || "All";
@@ -39,6 +40,7 @@ export default function AllClasses() {
   // Evaluates if any explicit filtering matrix state is active
   const isFilterActive =
     currentSearchUrl !== "" ||
+    (currentStatusUrl !== "ALL" && currentStatusUrl !== "") ||
     (currentCategoryUrl !== "" && currentCategoryUrl !== "All") ||
     currentDifficultyUrl !== "All" ||
     currentSortPriceUrl !== "All";
@@ -95,8 +97,10 @@ export default function AllClasses() {
     const loadClassesData = async () => {
       try {
         const res = await GetClasses({
-          page: currentPageUrl,
-          limit: limitPerPage,
+          page: 1,
+          limit: 12,
+          category: "All",
+          status: "approved",
           search: currentSearchUrl,
           category: currentCategoryUrl,
           difficulty: currentDifficultyUrl,
@@ -125,12 +129,12 @@ export default function AllClasses() {
     };
   }, [
     currentSearchUrl,
+    currentStatusUrl,
     currentCategoryUrl,
     currentPageUrl,
     currentDifficultyUrl,
     currentSortPriceUrl,
   ]);
-
   return (
     <div className="bg-transparent text-[#e5e2e1] font-sans min-h-screen relative">
       <VortexSpinner loading={loading} />
