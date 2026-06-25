@@ -33,3 +33,7 @@ export const GetBookingsByClassId = async (classId) => {
     return [];
   }
 };
+
+export const GetTransactions = async (page = 1, limit = 10) => {
+  return ServerFetch(`transactions?page=${page}&limit=${limit}`);
+};

@@ -1,11 +1,12 @@
-import React from 'react';
+import ForumPostManage from "@/components/dashboard/admin/ForumPostManage";
+import React from "react";
 
 const ForumManage = () => {
-    return (
-        <div>
-            <h1>Forum Manage</h1>
-        </div>
-    );
+  return (
+    <div>
+      <ForumPostManage />
+    </div>
+  );
 };
 
 export default ForumManage;

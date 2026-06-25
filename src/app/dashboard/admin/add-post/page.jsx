@@ -1,11 +1,8 @@
-import React from 'react';
+import AddForumPostForm from "@/components/dashboard/trainer/AddForumPostForm";
+import React from "react";
 
 const AdminPost = () => {
-    return (
-        <div>
-            <h1>Admin Post</h1>
-        </div>
-    );
+  return <AddForumPostForm />;
 };
 
 export default AdminPost;
