@@ -1,6 +1,6 @@
 import { ServerMutation, ServerUpdate } from "../core/serverMutation";
 
-export const UpdateTrainerAction = async (
+export const DemoteTrainerAction = async (
   applicationId,
   status,
   adminFeedback,
@@ -8,22 +8,31 @@ export const UpdateTrainerAction = async (
 ) => {
   try {
     return ServerMutation(
-      `admin/update/trainer/action/${applicationId}`,
+      `admin/demote/trainer/${applicationId}`,
       { status, adminFeedback, userEmail },
       "PATCH",
     );
   } catch (error) {
-    console.error("Error in UpdateTrainerAction:", error);
+    console.error("Error in DemoteTrainerAction:", error);
     return null;
   }
 };
 
-export const DemoteTrainerAction = async (email) => {
+export const UpdateTrainerAction = async (
+  applicationId,
+  status,
+  adminFeedback,
+  userEmail,
+) => {
   try {
-    const res = await ServerUpdate("admin/demote/trainer", { email }, "PATCH");
-    return res?.success ? res : null;
+    const res = await ServerUpdate(
+      `admin/update/trainer/action/${applicationId}`,
+      { status, adminFeedback, userEmail },
+      "PATCH",
+    );
+    return res;
   } catch (error) {
-    console.error("Error in DemoteTrainerAction:", error);
+    console.error("Error in UpdateTrainerAction:", error);
     return null;
   }
 };

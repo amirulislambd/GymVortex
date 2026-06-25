@@ -30,7 +30,7 @@ const TrainerRegistry = ({ initialTrainers }) => {
 
     setIsDemoting(true);
     try {
-      const data = await UpdateTrainerAction(
+      const data = await DemoteTrainerAction(
         selectedTrainer._id,
         "user",
         "Demoted by admin",
