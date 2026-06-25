@@ -181,7 +181,7 @@ const ForumPostCard = ({ post }) => {
           </div>
 
           {/* BUTTON */}
-          <Link href={`/forum/post/${post._id}`}>
+          <Link href={`/forum/${post._id}`}>
             <motion.button
               whileTap={{
                 scale: 0.97,

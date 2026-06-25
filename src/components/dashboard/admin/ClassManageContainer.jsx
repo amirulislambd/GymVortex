@@ -179,7 +179,7 @@ export default function ClassDashboardContainer() {
 
   return (
     <>
-      {/* 🚀 HEADER SECTION WITH SEARCH & FILTER */}
+      {/*  HEADER SECTION WITH SEARCH & FILTER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 font-mono">
         <div>
           <h1 className="text-xl md:text-2xl font-bold uppercase tracking-wider text-white">
@@ -190,7 +190,7 @@ export default function ClassDashboardContainer() {
           </p>
         </div>
 
-        {/* 🎯 SEARCH & FILTER CONTROLS */}
+        {/*  SEARCH & FILTER CONTROLS */}
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
             <input
@@ -204,7 +204,9 @@ export default function ClassDashboardContainer() {
 
           <select
             value={currentStatusUrl}
-            onChange={(e) => updateUrlParams({ status: e.target.value, page: 1 })}
+            onChange={(e) =>
+              updateUrlParams({ status: e.target.value, page: 1 })
+            }
             className="bg-[#141414] border border-[#444932] px-3 py-2 text-xs text-[#caf300] font-bold uppercase focus:outline-none cursor-pointer tracking-wider"
           >
             <option value="ALL">ALL STATUS</option>
@@ -215,10 +217,8 @@ export default function ClassDashboardContainer() {
         </div>
       </div>
 
-      {/* 📊 ১. স্ট্যাটাস কার্ডস */}
       <ClassStats stats={dashboardStats} filteredCount={totalClasses} />
 
-      {/* 📋 ২. ডাইনামিক টেবিল এবং পেজিনেশন */}
       <AnimatePresence mode="wait">
         {loading ? (
           <div className="text-center py-12 text-[#caf300] tracking-widest animate-pulse font-mono">
@@ -240,14 +240,13 @@ export default function ClassDashboardContainer() {
               totalRecords={totalClasses}
               indexOfFirstItem={(currentPageUrl - 1) * limitPerPage}
               indexOfLastItem={currentPageUrl * limitPerPage}
-              handleAction={handleAction} 
-              handleDelete={handleDelete} 
+              handleAction={handleAction}
+              handleDelete={handleDelete}
             />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 🛡️ ৩. গ্লোবাল ডাইনামিক সিকিউরিটি মোশন মোডাল */}
       <DynamicDeleteModal
         isOpen={modalConfig.isOpen}
         onClose={closeModal}

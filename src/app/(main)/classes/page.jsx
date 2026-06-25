@@ -5,9 +5,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import AllClasses from "@/components/classes/AllClasses";
 
-// Metadata setup cannot be co-located in a "use client" file in Next.js App Router.
-// Note: If you face any build errors regarding metadata, move this metadata export
-// to a separate page.js (Server Component) and import a client component layout here.
 
 const bannerImages = [
   "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1600&auto=format&fit=crop",
@@ -23,8 +20,7 @@ const AllClassesPage = () => {
       setCurrentImageIndex(
         (prevIndex) => (prevIndex + 1) % bannerImages.length,
       );
-    }, 5000); // Rotates background asset every 5000ms (5 seconds)
-
+    }, 5000); 
     return () => clearInterval(interval);
   }, []);
 

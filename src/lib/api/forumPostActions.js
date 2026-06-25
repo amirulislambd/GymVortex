@@ -15,3 +15,7 @@ export const GetForumPostsById = async (id) => {
   const data = await ServerFetch(`forumPost/${id}`);
   return data;
 };
+
+export const GetCommentsAction = async (postId) => {
+  return ServerFetch(`comments/${postId}`);
+};
