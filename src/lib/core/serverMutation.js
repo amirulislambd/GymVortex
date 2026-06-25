@@ -3,12 +3,37 @@ import { GetUserToken } from "./session";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
+// export const ServerFetch = async (url) => {
+//   const res = await fetch(`${baseUrl}/api/${url}`, {
+//     cache: "no-cache",
+//   });
+//   return await res.json();
+// };
+
 export const ServerFetch = async (url) => {
   const res = await fetch(`${baseUrl}/api/${url}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(await authHeader()),
+    },
     cache: "no-cache",
   });
+  if (!res.ok) {
+    const errorText = await res.text(); 
+    console.error("Backend Error HTML:", errorText); 
+    
+    if (res.status === 401) redirect("/unauthorized");
+    if (res.status === 403) redirect("/forbidden");
+    throw new Error(`API error: ${res.status}`);
+  }
+
   return await res.json();
 };
+
+
+
+
 
 export const authHeader = async () => {
   const token = await GetUserToken();

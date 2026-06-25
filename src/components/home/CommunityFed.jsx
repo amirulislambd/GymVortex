@@ -9,7 +9,7 @@ const CommunityFed = async () => {
   const posts = response?.data || [];
 
   return (
-    <section className="px-4 md:px-8 lg:px-12 py-20">
+    <section className="px-4 md:px-8 lg:px-12 md:py-20">
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
         <div>
@@ -24,8 +24,8 @@ const CommunityFed = async () => {
 
           <p className="mt-4 max-w-2xl text-neutral-400 text-sm md:text-base leading-7">
             Join the GymVortex community to ask questions, share your fitness
-            journey, exchange knowledge, and connect with members, trainers,
-            and admins from around the world.
+            journey, exchange knowledge, and connect with members, trainers, and
+            admins from around the world.
           </p>
         </div>
 
