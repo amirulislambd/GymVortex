@@ -37,23 +37,28 @@ export default function ForumPostDetails({ post, user, comments = [] }) {
   const [likes, setLikes] = useState(post.likes || []);
   const [dislikes, setDislikes] = useState(post.dislikes || []);
 
-  const userEmail = user?.email;
-  const hasLiked = likes.includes(userEmail);
-  const hasDisliked = dislikes.includes(userEmail);
+  const hasLiked = likes?.some((item) => item.email === user?.email);
+
+  const hasDisliked = dislikes?.some((item) => item.email === user?.email);
 
   const handleLike = async () => {
     if (!user) {
       toast.error("Login to like");
       return;
     }
-    const result = await LikePostAction(post._id, userEmail);
+
+    const result = await LikePostAction(post._id, {
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+    });
+
     if (result?.success) {
-      if (hasLiked) {
-        setLikes((prev) => prev.filter((e) => e !== userEmail));
-      } else {
-        setLikes((prev) => [...prev, userEmail]);
-        setDislikes((prev) => prev.filter((e) => e !== userEmail));
-      }
+      setLikes(result.likes || []);
+      setDislikes(result.dislikes || []);
+    } else {
+      toast.error(result?.message || "Failed");
     }
   };
 
@@ -62,17 +67,21 @@ export default function ForumPostDetails({ post, user, comments = [] }) {
       toast.error("Login to dislike");
       return;
     }
-    const result = await DislikePostAction(post._id, userEmail);
+
+    const result = await DislikePostAction(post._id, {
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+    });
+
     if (result?.success) {
-      if (hasDisliked) {
-        setDislikes((prev) => prev.filter((e) => e !== userEmail));
-      } else {
-        setDislikes((prev) => [...prev, userEmail]);
-        setLikes((prev) => prev.filter((e) => e !== userEmail));
-      }
+      setLikes(result.likes || []);
+      setDislikes(result.dislikes || []);
+    } else {
+      toast.error(result?.message || "Failed");
     }
   };
-
   const onSubmit = async (data) => {
     if (!user) {
       toast.error("Login to comment");
@@ -161,6 +170,7 @@ export default function ForumPostDetails({ post, user, comments = [] }) {
       toast.error("Something went wrong");
     }
   };
+
   return (
     <section className="min-h-screen bg-[#090909]">
       {/* HERO */}

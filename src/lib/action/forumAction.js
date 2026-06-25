@@ -1,4 +1,8 @@
-import { ServerDelete, ServerMutation } from "../core/serverMutation";
+import {
+  ServerDelete,
+  ServerMutation,
+  ServerUpdate,
+} from "../core/serverMutation";
 
 export const PostForumAction = async (data, method = "POST") => {
   const urlPath = data._id ? `forumPost/${data._id}` : "forumPost";
@@ -30,13 +34,10 @@ export const DeleteReplyAction = async (commentId, replyId) => {
   return ServerDelete(`comments/${commentId}/reply/${replyId}`);
 };
 
-
-
-
-export const LikePostAction = async (id, userEmail) => {
-  return ServerUpdate(`forumPost/${id}/like`, { userEmail });
+export const LikePostAction = async (id, data) => {
+  return ServerUpdate(`forumPost/${id}/like`, data);
 };
 
-export const DislikePostAction = async (id, userEmail) => {
-  return ServerUpdate(`forumPost/${id}/dislike`, { userEmail });
+export const DislikePostAction = async (id, data) => {
+  return ServerUpdate(`forumPost/${id}/dislike`, data);
 };
