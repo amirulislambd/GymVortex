@@ -58,10 +58,6 @@ export default async function ClassDetails({ params }) {
     isFavorite = favoriteRes?.isFavorite ?? false;
   }
 
-  console.log("userEmail:", userEmail);
-  console.log("isBooked:", isBooked);
-  console.log("isFavorite:", isFavorite);
-
   if (!classData) {
     return (
       <div className="min-h-screen bg-[#131313] flex items-center justify-center">

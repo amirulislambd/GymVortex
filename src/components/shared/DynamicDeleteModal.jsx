@@ -9,12 +9,11 @@ export default function DynamicDeleteModal({
   onClose,
   itemTitle,
   isProcessing,
-  type, // 👈 নতুন প্রপ: "danger", "success", "warning", "admin", "block", "unblock"
+  type,
   onConfirm,
 }) {
   if (!isOpen) return null;
 
-  // ১. টাইপ অনুযায়ী থিম, কালার ও আইকন ডাইনামিক করার লজিক
   let theme = {
     headerColor: "text-red-500",
     headerBg: "bg-red-950/20",
@@ -26,7 +25,6 @@ export default function DynamicDeleteModal({
       "* Warning: This action cannot be undone. Records will be altered permanently.",
   };
 
-  // যদি অপারেশনটি SUCCESS বা পজিটিভ কিছু হয়
   if (type === "success" || type === "unblock") {
     theme = {
       headerColor: "text-lime-500",
@@ -38,9 +36,7 @@ export default function DynamicDeleteModal({
       subText:
         "* Notice: This action will restore standard operations and synchronize matrices.",
     };
-  }
-  // যদি অপারেশনটি ADMIN প্রোমোশন বা সিকিউরিটি লেভেল চেঞ্জ হয়
-  else if (type === "admin" || type === "warning") {
+  } else if (type === "admin" || type === "warning") {
     theme = {
       headerColor: "text-yellow-500",
       headerBg: "bg-yellow-950/20",
