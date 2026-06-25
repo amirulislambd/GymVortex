@@ -148,33 +148,139 @@ export default function TransactionsTable({
           </div>
         </div>
       </div>
+      {/* ── MOBILE: Cards (below md) ─────────────────────────── */}
+      <div className="md:hidden space-y-3 w-full max-w-full overflow-x-hidden px-1">
+        {transactions.length === 0 ? (
+          <div className="bg-[#0f0f0f] border border-neutral-900 px-4 py-16 text-center">
+            <p
+              className="text-neutral-600 text-[10px] uppercase tracking-widest"
+              style={{ fontFamily: "JetBrains Mono, monospace" }}
+            >
+              [ No Transactions Found ]
+            </p>
+          </div>
+        ) : (
+          transactions.map((tx, idx) => (
+            <motion.div
+              key={tx._id?.toString() || tx.stripeSessionId}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.04 }}
+              className="bg-[#0f0f0f] border border-neutral-900 border-l-2 border-l-[#caf300] w-full box-border"
+            >
+              {/* Card Header */}
+              <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-neutral-900/80">
+                <div className="flex items-center gap-2">
+                  <FiDollarSign size={13} className="text-[#caf300]" />
+                  <span
+                    className="text-2xl font-black text-[#caf300]"
+                    style={{ fontFamily: "Archivo Narrow, sans-serif" }}
+                  >
+                    ${parseFloat(tx.priceAmount || 0).toFixed(2)}
+                  </span>
+                </div>
+                <span
+                  className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 border ${STATUS_COLORS["captured"]}`}
+                  style={{ fontFamily: "JetBrains Mono, monospace" }}
+                >
+                  ● CAPTURED
+                </span>
+              </div>
 
-      {/* ── Section Header ───────────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-1 h-6 bg-[#caf300]" />
-          <h2
-            className="text-sm font-black uppercase tracking-widest text-white"
-            style={{ fontFamily: "JetBrains Mono, monospace" }}
-          >
-            Financial Ledger // Stripe_Core
-          </h2>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            className="flex items-center gap-2 border border-neutral-800 text-neutral-400 hover:text-white px-3 py-2 text-[10px] uppercase tracking-widest transition-all"
-            style={{ fontFamily: "JetBrains Mono, monospace" }}
-          >
-            <FiDownload size={11} /> Export_CSV
-          </button>
-          <button
-            onClick={handleRefresh}
-            className="flex items-center gap-2 border border-[#caf300]/30 text-[#caf300] hover:bg-[#caf300]/10 px-3 py-2 text-[10px] uppercase tracking-widest transition-all"
-            style={{ fontFamily: "JetBrains Mono, monospace" }}
-          >
-            <FiRefreshCw size={11} /> Refresh_Sync
-          </button>
-        </div>
+              {/* Card Body */}
+              <div className="px-4 py-3 space-y-3">
+                {/* Email - Added break-words to prevent overflow */}
+                <div className="flex items-start gap-3 w-full">
+                  <FiMail
+                    size={11}
+                    className="text-neutral-600 mt-1 shrink-0"
+                  />
+                  <div className="flex flex-col min-w-0 w-full">
+                    <span
+                      className="text-[9px] text-neutral-600 uppercase tracking-widest mb-0.5"
+                      style={{ fontFamily: "JetBrains Mono, monospace" }}
+                    >
+                      User
+                    </span>
+                    <span
+                      className="text-[11px] text-neutral-300 break-words"
+                      style={{ fontFamily: "JetBrains Mono, monospace" }}
+                    >
+                      {tx.userEmail}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Date */}
+                <div className="flex items-start gap-3">
+                  <FiCalendar
+                    size={11}
+                    className="text-neutral-600 mt-0.5 shrink-0"
+                  />
+                  <div className="flex flex-col">
+                    <span
+                      className="text-[9px] text-neutral-600 uppercase tracking-widest mb-0.5"
+                      style={{ fontFamily: "JetBrains Mono, monospace" }}
+                    >
+                      Date
+                    </span>
+                    <span
+                      className="text-[11px] text-neutral-500"
+                      style={{ fontFamily: "JetBrains Mono, monospace" }}
+                    >
+                      {formatDate(tx.createdAt)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* TX ID */}
+                <div className="flex items-start gap-3 w-full">
+                  <FiHash
+                    size={11}
+                    className="text-neutral-600 mt-1 shrink-0"
+                  />
+                  <div className="flex items-center justify-between gap-2 w-full min-w-0">
+                    <div className="flex flex-col min-w-0">
+                      <span
+                        className="text-[9px] text-neutral-600 uppercase tracking-widest mb-0.5"
+                        style={{ fontFamily: "JetBrains Mono, monospace" }}
+                      >
+                        TX ID
+                      </span>
+                      <span
+                        className="text-[11px] text-neutral-500 truncate"
+                        style={{ fontFamily: "JetBrains Mono, monospace" }}
+                      >
+                        {tx.stripeSessionId
+                          ? `${tx.stripeSessionId.slice(0, 15)}...`
+                          : "N/A"}
+                      </span>
+                    </div>
+                    {tx.stripeSessionId && (
+                      <button
+                        onClick={() => handleCopy(tx.stripeSessionId)}
+                        className="shrink-0 border border-neutral-800 px-2 py-1 text-[9px] uppercase text-neutral-600"
+                      >
+                        <FiCopy size={10} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-4 pb-4">
+                <button
+                  onClick={() => setSelectedTx(tx)}
+                  className="w-full bg-neutral-900/60 border border-neutral-800 text-neutral-400 py-2.5 text-[10px] uppercase tracking-widest hover:border-[#caf300]/40 transition-all"
+                  style={{ fontFamily: "JetBrains Mono, monospace" }}
+                >
+                  View Full Details
+                </button>
+              </div>
+            </motion.div>
+          ))
+        )}
       </div>
 
       {/* ── DESKTOP: Table (md and above) ────────────────────── */}

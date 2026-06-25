@@ -6,10 +6,10 @@ export const GetMyForumPosts = async (
   limit = 9,
   search = "",
 ) => {
-  const data = await ServerFetch(
-    `myForumPosts?email=${email}&page=${page}&limit=${limit}&search=${search}`,
+  const response = await ServerFetch(
+    `forumPost?email=${email}&page=${page}&limit=${limit}&search=${search}`,
   );
-  return data;
+  return response;
 };
 export const GetForumPostsById = async (id) => {
   const data = await ServerFetch(`forumPost/${id}`);
