@@ -1,10 +1,7 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import toast from "react-hot-toast";
-import {
-  DemoteTrainerAction,
-  UpdateTrainerAction,
-} from "@/lib/action/trainerManagement";
+import { DemoteTrainerAction } from "@/lib/action/trainerManagement";
 import DynamicDeleteModal from "@/components/shared/DynamicDeleteModal";
 
 const TrainerRegistry = ({ initialTrainers }) => {

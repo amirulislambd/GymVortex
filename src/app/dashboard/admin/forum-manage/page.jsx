@@ -1,12 +1,11 @@
 import ForumPostManage from "@/components/dashboard/admin/ForumPostManage";
-import React from "react";
+import { GetAllPosts } from "@/lib/api/forumPostActions";
 
-const ForumManage = () => {
-  return (
-    <div>
-      <ForumPostManage />
-    </div>
-  );
-};
+export default async function ForumManage({ searchParams }) {
+  const resolvedParams = await searchParams;
+  const page = parseInt(resolvedParams?.page) || 1;
+  const search = resolvedParams?.search || "";
 
-export default ForumManage;
+  const forumPosts = await GetAllPosts(page, 10, search);
+  return <ForumPostManage initialData={forumPosts} />;
+}

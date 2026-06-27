@@ -15,7 +15,7 @@ export default function FeaturedClasses() {
     const loadFeaturedData = async () => {
       try {
         // Fetching with specific limit for the landing page matrix layout
-        const res = await GetClasses({ page: 1, limit: 3, category: "All" });
+        const res = await GetClasses({ page: 1, limit: 4, category: "All" });
         if (ignore) return;
 
         if (res?.success) {
@@ -68,10 +68,10 @@ export default function FeaturedClasses() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               >
                 {/* Rendering your pre-existing ClassCard component map */}
-                {featuredClasses.slice(0, 3).map((item) => (
+                {featuredClasses.slice(0, 4).map((item) => (
                   <ClassCard key={item._id} item={item} />
                 ))}
               </motion.div>

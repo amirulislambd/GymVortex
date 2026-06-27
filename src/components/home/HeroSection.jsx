@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 // Array containing tactical background image resources
 const SLIDER_IMAGES = [
@@ -63,9 +64,11 @@ export default function HeroSection() {
 
         {/* Call to Action Controls Interactivity */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto sm:max-w-none">
-          <button className="bg-[#caf300] text-black px-10 py-4 text-sm font-black uppercase tracking-wider hover:bg-white transition-all active:scale-95 w-full sm:w-auto">
-            EXPLORE CLASSES
-          </button>
+          <Link href={"/classes"}>
+            <button className="bg-[#caf300] text-black px-10 py-4 text-sm font-black uppercase tracking-wider hover:bg-white transition-all active:scale-95 w-full sm:w-auto">
+              EXPLORE CLASSES
+            </button>
+          </Link>
           <button className="border-2 border-white text-white px-10 py-4 text-sm font-black uppercase tracking-wider hover:bg-white hover:text-black transition-all active:scale-95 w-full sm:w-auto">
             JOIN THE ELITE
           </button>
