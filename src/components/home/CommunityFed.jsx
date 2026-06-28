@@ -1,12 +1,13 @@
 import Link from "next/link";
 import React from "react";
 import { FiArrowRight } from "react-icons/fi";
-import { GetMyForumPosts } from "@/lib/api/forumPostActions";
+import { GetAllPosts } from "@/lib/api/forumPostActions";
 import ForumPostCard from "../forum/ForumPostCard";
 
 const CommunityFed = async () => {
-  const response = await GetMyForumPosts(undefined, undefined, 4, undefined);
-  const posts = response?.data || [];
+  const forumPosts = await GetAllPosts(undefined, 4, undefined);
+  const posts = forumPosts?.data || [];
+  console.log("posts:", posts);
 
   return (
     <section className="px-4 md:px-8 lg:px-12 md:py-20">
