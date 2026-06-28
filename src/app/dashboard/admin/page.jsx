@@ -4,6 +4,8 @@ import AdminHeader from "@/components/dashboard/admin/Adminhead";
 import AdminStatCards from "@/components/dashboard/admin/Adminstatcards";
 import AdminPerformance from "@/components/dashboard/admin/AdbminPerformance";
 import AdminCommandCenter from "@/components/dashboard/admin/AdminCommandCenter";
+import SystemMonitor from "@/components/dashboard/admin/SystemMonitor";
+import UserStatsChart from "@/components/dashboard/admin/UserStatsChart";
 
 const AdminOverview = async () => {
   const [statsData, logsData] = await Promise.all([
@@ -25,6 +27,11 @@ const AdminOverview = async () => {
         <div className="lg:col-span-2">
           <AdminCommandCenter />
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <UserStatsChart />
+        <SystemMonitor />
       </div>
     </div>
   );
