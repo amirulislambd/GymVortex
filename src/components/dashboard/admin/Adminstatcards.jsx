@@ -1,96 +1,119 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, animate } from "framer-motion";
-import { RiGroupLine, RiCalendarCheckLine, RiBookmarkLine } from "react-icons/ri";
+import { motion, animate, useMotionValue } from "framer-motion";
+import {
+  RiGroupLine,
+  RiCalendarCheckLine,
+  RiBookmarkLine,
+  RiDiscussLine,
+} from "react-icons/ri";
 
-// ─── Animated Counter ─────────────────────────────────────────────────────────
-
-function Counter({ to, suffix = "" }) {
+// Animated Counter
+function Counter({ value = 0 }) {
   const count = useMotionValue(0);
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    const ctrl = animate(count, to, { duration: 1.4, ease: "easeOut" });
-    const unsub = count.on("change", (v) => setDisplay(Math.round(v)));
-    return () => { ctrl.stop(); unsub(); };
-  }, [to]);
+    const controls = animate(count, Number(value), {
+      duration: 1.4,
+      ease: "easeOut",
+    });
 
-  return <motion.span>{display.toLocaleString()}{suffix}</motion.span>;
+    const unsubscribe = count.on("change", (v) => setDisplay(Math.round(v)));
+
+    return () => {
+      controls.stop();
+      unsubscribe();
+    };
+  }, [value]);
+
+  return <>{display.toLocaleString()}</>;
 }
 
-// ─── Single Stat Card ─────────────────────────────────────────────────────────
-
-function StatCard({ icon, label, value, badge, badgeColor }) {
+function Card({ icon, title, value, color }) {
   return (
-    <div className="relative flex-1 min-w-[160px] bg-[#111] border border-white/[0.07] p-5 overflow-hidden group">
-      {/* hover glow */}
-      <div className="absolute inset-0 border border-[#caf300] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+    <motion.div
+      whileHover={{
+        y: -8,
+        scale: 1.02,
+      }}
+      transition={{ duration: 0.3 }}
+      className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6 group"
+    >
+      {/* Glow */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-700 bg-[radial-gradient(circle_at_top,rgba(202,243,0,.12),transparent_65%)]" />
 
-      {/* icon + label */}
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-[#caf300] text-base">{icon}</span>
-        <p className="text-[9px] font-mono text-white/40 uppercase tracking-[0.25em]">{label}</p>
-      </div>
+      {/* Border Glow */}
+      <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-[#caf300]/40 transition duration-500" />
 
-      {/* value + badge */}
-      <div className="flex items-end gap-2">
-        <h3
-          className="text-4xl font-black text-white leading-none tracking-tighter"
-          style={{ fontFamily: "Archivo Narrow, sans-serif" }}
-        >
-          <Counter to={value} />
-        </h3>
-        {badge && (
-          <span
-            className="text-[10px] font-mono font-bold mb-0.5 uppercase"
-            style={{ color: badgeColor || "#caf300" }}
+      <div className="relative z-10 flex items-center justify-between">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.25em] text-white/40 font-mono">
+            {title}
+          </p>
+
+          <h2
+            className="mt-4 text-5xl font-black text-white leading-none"
+            style={{ fontFamily: "Archivo Narrow, sans-serif" }}
           >
-            {badge}
-          </span>
-        )}
+            <Counter value={value} />
+          </h2>
+        </div>
+
+        <motion.div
+          whileHover={{ rotate: 12, scale: 1.1 }}
+          className="flex h-14 w-14 items-center justify-center rounded-xl"
+          style={{
+            background: `${color}20`,
+            color,
+          }}
+        >
+          <span className="text-3xl">{icon}</span>
+        </motion.div>
       </div>
-    </div>
+
+      {/* Bottom Accent */}
+      <div
+        className="absolute bottom-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-700"
+        style={{
+          background: color,
+        }}
+      />
+    </motion.div>
   );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
-
 export default function AdminStatCards({ stats }) {
-  // stats comes from your API
-  // fallback to dummy data until API is connected
-  const data = stats || {
-    totalUsers: 8420,
-    userGrowth: "+4.2%",
-    totalClasses: 156,
-    classStatus: "Active",
-    totalBookedClasses: 1248,
-    bookingGrowth: "+8%",
-  };
-
   return (
-    <div className="flex flex-wrap gap-3 px-4 sm:px-6 py-4">
-      <StatCard
+    <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      <Card
+        title="Total Users"
+        value={stats?.totalUsers ?? 0}
         icon={<RiGroupLine />}
-        label="Total Users"
-        value={data.totalUsers}
-        badge={data.userGrowth}
-        badgeColor="#caf300"
+        color="#caf300"
       />
-      <StatCard
+
+      <Card
+        title="Total Classes"
+        value={stats?.totalClasses ?? 0}
         icon={<RiCalendarCheckLine />}
-        label="Total Classes"
-        value={data.totalClasses}
-        badge={data.classStatus}
-        badgeColor="#caf300"
+        color="#00d4ff"
       />
-      <StatCard
+
+      <Card
+        title="Bookings"
+        value={stats?.totalBookings ?? 0}
         icon={<RiBookmarkLine />}
-        label="Total Booked Classes"
-        value={data.totalBookedClasses}
-        badge={data.bookingGrowth}
-        badgeColor="#caf300"
+        color="#ffb800"
       />
-    </div>
+
+      <Card
+        title="Forum Posts"
+        value={stats?.totalForums ?? 0}
+        icon={<RiDiscussLine />}
+        color="#ff4d6d"
+      />
+    </section>
   );
 }
