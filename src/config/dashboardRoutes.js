@@ -79,6 +79,11 @@ import {
         icon: Plus,
       },
       {
+        href: "/dashboard/admin/my-posts",
+        label: "My Posts",
+        icon: ListCheck,
+      },
+      {
         href: "/dashboard/admin/forum-manage",
         label: "Forum Manage",
         icon: Persons,

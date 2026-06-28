@@ -91,7 +91,7 @@ export default function AddForumPostForm({ postData }) {
         router.refresh();
         const path =
           user?.role === "admin"
-            ? "/dashboard/admin/admin-posts"
+            ? "/dashboard/admin/my-posts"
             : "/dashboard/trainer/my-posts";
         router.push(path);
       }

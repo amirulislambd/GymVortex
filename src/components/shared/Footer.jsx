@@ -1,131 +1,185 @@
-import React from "react";
+"use client";
+
 import Link from "next/link";
 import { EnvelopeOpen, Handset } from "@gravity-ui/icons";
+import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 
 const NAVIGATION_LINKS = [
-  { href: "/dashboard", label: "Dashboard", isActive: true },
-  { href: "/classes", label: "All Classes", isActive: false },
-  { href: "/forum", label: "Community Forum", isActive: false },
-  { href: "/analytics", label: "Analytics", isActive: false },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/classes", label: "All Classes" },
+  { href: "/forum", label: "Community Forum" },
 ];
 
 const SUPPORT_LINKS = [
-  { href: "/privacy", label: "Privacy Policy", isActive: false },
-  { href: "/terms", label: "Terms of Service", isActive: false },
-  { href: "/support", label: "Contact Support", isActive: true },
-  { href: "/affiliate", label: "Affiliate Program", isActive: false },
+  { href: "#", label: "Privacy Policy" },
+  { href: "#", label: "Terms of Service" },
+  { href: "#", label: "Contact Support" },
+  { href: "#", label: "Affiliate Program" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0a0a0a] border-t border-neutral-900/60 pt-12 md:pt-20 pb-10 md:pb-12 select-none font-sans">
-      <div className="w-full max-w-[1440px] mx-auto px-4 md:px-12">
-        {/* Main Footer Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-8 items-start mb-10 md:mb-20 text-center md:text-left">
-          {/* Brand Column */}
-          <div className="flex flex-col items-center md:items-start">
-            <h2 className="font-sans font-black text-xl tracking-widest uppercase text-white mb-4 md:mb-6">
+    <footer className="bg-[#0a0a0a] border-t border-neutral-900">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10">
+        {/* ================= MOBILE ================= */}
+        <div className="md:hidden py-10">
+          <div className="text-center select-none">
+            <Link
+              href="/"
+              className="text-2xl font-black tracking-widest text-white"
+            >
               GYM<span className="text-[#caf300]">VORTEX</span>
-            </h2>
-            {/* Hidden on mobile to reduce lengthy text clutter */}
-            <p className="hidden md:block text-neutral-400 text-sm leading-relaxed max-w-[280px] mb-6">
-              Industrial athletics engineered for results. Professional
-              discipline, high-velocity motion, and raw power.
+            </Link>
+
+            <p className="mt-3 text-neutral-500 text-sm">
+              Train. Grow. Dominate.
             </p>
 
-            {/* Quick Action Contact Nodes - Always Visible */}
-            <div className="flex items-center gap-3">
+            <div className="flex justify-center gap-4 mt-8">
               <a
                 href="mailto:amirulislambd313@gmail.com"
-                title="Send Email"
-                className="w-10 h-10 flex items-center justify-center bg-neutral-900/40 border border-neutral-800/80 text-neutral-400 hover:border-[#caf300] hover:text-[#caf300] hover:bg-neutral-900 transition-all duration-200 rounded-sm"
+                className="w-11 h-11 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-[#caf300] hover:border-[#caf300] transition"
               >
                 <EnvelopeOpen className="size-4" />
               </a>
+
               <a
                 href="https://wa.me/8801928570020"
-                title="Call Mobile"
-                className="w-10 h-10 flex items-center justify-center bg-neutral-900/40 border border-neutral-800/80 text-neutral-400 hover:border-[#caf300] hover:text-[#caf300] hover:bg-neutral-900 transition-all duration-200 rounded-sm"
+                className="w-11 h-11 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-[#caf300] hover:border-[#caf300] transition"
+              >
+                <Handset className="size-4" />
+              </a>
+
+              <a
+                href="https://github.com/"
+                target="_blank"
+                className="w-11 h-11 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-[#caf300] hover:border-[#caf300] transition"
+              >
+                <FaGithub />
+              </a>
+
+              <a
+                href="https://linkedin.com/"
+                target="_blank"
+                className="w-11 h-11 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-[#caf300] hover:border-[#caf300] transition"
+              >
+                <FaLinkedinIn />
+              </a>
+            </div>
+
+            <div className="border-t border-neutral-900 mt-8 pt-6">
+              <p className="text-xs text-neutral-500">
+                © {new Date().getFullYear()} GymVortex
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ================= DESKTOP ================= */}
+
+        <div className="hidden md:grid grid-cols-4 gap-10 py-16">
+          {/* Brand */}
+
+          <div>
+            <h2 className="text-3xl font-black tracking-widest text-white">
+              GYM<span className="text-[#caf300]">VORTEX</span>
+            </h2>
+
+            <p className="mt-5 text-neutral-400 leading-7">
+              Industrial athletics engineered for results. Professional
+              discipline, elite performance, and powerful community training.
+            </p>
+
+            <div className="flex gap-3 mt-7">
+              <a
+                href="mailto:amirulislambd313@gmail.com"
+                className="w-11 h-11 border border-neutral-800 rounded flex items-center justify-center text-neutral-400 hover:text-[#caf300] hover:border-[#caf300] transition"
+              >
+                <EnvelopeOpen className="size-4" />
+              </a>
+
+              <a
+                href="https://wa.me/8801928570020"
+                className="w-11 h-11 border border-neutral-800 rounded flex items-center justify-center text-neutral-400 hover:text-[#caf300] hover:border-[#caf300] transition"
               >
                 <Handset className="size-4" />
               </a>
             </div>
           </div>
 
-          {/* Navigation Column - Hidden on mobile, visible from medium screens (md) */}
-          <div className="hidden md:flex flex-col items-start font-mono">
-            <h4 className="text-[11px] font-black tracking-[0.25em] text-[#caf300] uppercase mb-6">
-              NAVIGATION
-            </h4>
-            <div className="flex flex-col gap-3.5 font-sans w-full">
-              {NAVIGATION_LINKS.map((link) => (
+          {/* Navigation */}
+
+          <div>
+            <h3 className="uppercase tracking-widest text-[#caf300] text-sm font-bold mb-6">
+              Navigation
+            </h3>
+
+            <div className="space-y-4">
+              {NAVIGATION_LINKS.map((item) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`text-sm font-medium transition-colors duration-200 w-fit ${
-                    link.isActive
-                      ? "text-neutral-400 hover:text-white"
-                      : "text-neutral-600 opacity-40 cursor-not-allowed pointer-events-none"
-                  }`}
+                  key={item.href}
+                  href={item.href}
+                  className="block text-neutral-400 hover:text-[#caf300] transition"
                 >
-                  {link.label}
+                  {item.label}
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Support Column - Hidden on mobile, visible from medium screens (md) */}
-          <div className="hidden md:flex flex-col items-start font-mono">
-            <h4 className="text-[11px] font-black tracking-[0.25em] text-[#caf300] uppercase mb-6">
-              SUPPORT
-            </h4>
-            <div className="flex flex-col gap-3.5 font-sans w-full">
-              {SUPPORT_LINKS.map((link) => (
+          {/* Support */}
+
+          <div>
+            <h3 className="uppercase tracking-widest text-[#caf300] text-sm font-bold mb-6">
+              Support
+            </h3>
+
+            <div className="space-y-4">
+              {SUPPORT_LINKS.map((item) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`text-sm font-medium transition-colors duration-200 w-fit ${
-                    link.isActive
-                      ? "text-neutral-400 hover:text-white"
-                      : "text-neutral-600 opacity-40 cursor-not-allowed pointer-events-none"
-                  }`}
+                  key={item.href}
+                  href={item.href}
+                  className="block text-neutral-400 hover:text-[#caf300] transition"
                 >
-                  {link.label}
+                  {item.label}
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* System Status Telemetry Column - Kept visible for tactical vibe */}
-          <div className="flex flex-col items-center md:items-start font-mono">
-            <h4 className="text-[11px] font-black tracking-[0.25em] text-[#caf300] uppercase mb-4 md:mb-6">
-              SYSTEM STATUS
-            </h4>
-            <div className="bg-[#111111]/40 border border-neutral-900 p-5 w-full max-w-[280px] mx-auto md:mx-0">
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#caf300] animate-pulse shadow-[0_0_8px_#caf300]" />
-                <span className="text-[10px] font-black tracking-widest text-neutral-200 uppercase">
-                  ALL NODES ACTIVE
-                </span>
+          {/* Status */}
+
+          <div>
+            <h3 className="uppercase tracking-widest text-[#caf300] text-sm font-bold mb-6">
+              System Status
+            </h3>
+
+            <div className="border border-neutral-800 bg-[#111] rounded-lg p-5">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#caf300] animate-pulse"></span>
+
+                <span className="text-sm text-white">ALL NODES ACTIVE</span>
               </div>
-              <p className="text-[11px] text-neutral-500 font-medium">
+
+              <p className="text-neutral-500 mt-3 text-sm">
                 Version 2.4.1 (Alpha Release)
               </p>
             </div>
           </div>
         </div>
 
-        {/* Bottom Utility Bar */}
-        <div className="border-t border-neutral-900/40 pt-8 flex flex-col md:flex-row items-center justify-between gap-5 font-mono text-[10px] font-bold tracking-[0.15em] text-neutral-500 text-center md:text-left">
-          <div>
-            © {new Date().getFullYear()} GYMVORTEX INDUSTRIAL ATHLETICS. ALL
-            RIGHTS RESERVED.
-          </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-neutral-400">
-            <span>DESIGNED FOR PERFORMANCE</span>
-            <span className="text-neutral-600 hidden sm:inline">|</span>
-            <span>
-              ENGINEERED BY <span className="text-[#caf300]">GYMVORTEX</span>
+        {/* Bottom */}
+
+        <div className="hidden md:flex border-t border-neutral-900 py-6 justify-between items-center">
+          <p className="text-neutral-500 text-sm">
+            © {new Date().getFullYear()} GymVortex. All rights reserved.
+          </p>
+
+          <div className="flex gap-6 text-sm">
+            <span className="text-neutral-500">Designed for Performance</span>
+
+            <span className="text-[#caf300] font-semibold">
+              Engineered by GymVortex
             </span>
           </div>
         </div>
