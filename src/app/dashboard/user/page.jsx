@@ -21,6 +21,7 @@ export default async function UserOverviewPage() {
 
   // 2. Then, fetch the fresh, newly updated metrics from the database
   const userMetrics = await GetUserMetrics(user.email);
+  console.log("userMetrics:", userMetrics);
   const favoriteClasses = await GetMyFavorites(user.email);
   // 3. Extract banner data safely from the fresh metrics response
   const userMetricsData = userMetrics?.banner;
