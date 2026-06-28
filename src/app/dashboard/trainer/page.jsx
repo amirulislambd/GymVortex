@@ -1,8 +1,8 @@
 import MetricsGrid from "@/components/dashboard/trainer/MetricsGrid";
 import PerformanceFeed from "@/components/dashboard/trainer/PerformanceFeed";
 import RightSidebar from "@/components/dashboard/trainer/RightSidebar";
+import TrainerHeader from "@/components/dashboard/trainer/TrainerHeader";
 import { GetMetricsTrainerDashboard } from "@/lib/api/dashboard";
-import { GetClassById } from "@/lib/api/getClasses";
 import { GetUserSession } from "@/lib/core/session";
 import React from "react";
 
@@ -14,6 +14,7 @@ const TrainerOverview = async () => {
 
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-gym-bg text-gym-text min-h-screen">
+      <TrainerHeader user={user} />
       <MetricsGrid metrics={metrics} />
 
       <div className="grid grid-cols-12 gap-6 items-start">

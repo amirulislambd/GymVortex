@@ -6,16 +6,18 @@ import AdminPerformance from "@/components/dashboard/admin/AdbminPerformance";
 import AdminCommandCenter from "@/components/dashboard/admin/AdminCommandCenter";
 import SystemMonitor from "@/components/dashboard/admin/SystemMonitor";
 import UserStatsChart from "@/components/dashboard/admin/UserStatsChart";
+import { GetUserSession } from "@/lib/core/session";
 
 const AdminOverview = async () => {
-  const [statsData, logsData] = await Promise.all([
+  const [user, statsData, logsData] = await Promise.all([
+    GetUserSession(),
     getAdminStats(),
     getSystemLogs(),
   ]);
-  console.log(logsData?.logs);
+  console.log("user:", user);
   return (
     <div className="space-y-6">
-      <AdminHeader />
+      <AdminHeader user={user} />
 
       <AdminStatCards stats={statsData?.stats} />
 

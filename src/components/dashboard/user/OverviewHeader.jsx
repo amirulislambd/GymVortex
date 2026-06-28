@@ -1,7 +1,7 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
 
-export default function OverviewHeader({ userMetricsData }) {
+export default function OverviewHeader({ userActivity }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
@@ -12,7 +12,7 @@ export default function OverviewHeader({ userMetricsData }) {
       "ATHLETE_01",
     rank = "TITAN II",
     streak = 12,
-  } = userMetricsData || {};
+  } = userActivity || {};
 
   // Helper function to safely split the rank text into two parts for styling
   const renderRank = (fullRank) => {

@@ -1,25 +1,30 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from "recharts";
+import { authClient } from "@/lib/auth-client";
 
-const weeklyData = [
-  { day: "MON", value: 65 },
-  { day: "TUE", value: 80 },
-  { day: "WED", value: 90 },
-  { day: "THU", value: 100, current: true },
-  { day: "FRI", value: 0 },
-  { day: "SAT", value: 0 },
-  { day: "SUN", value: 0 },
-];
+// ─── Fetcher ──────────────────────────────────────────────────────────────────
 
-const monthlyData = [
-  { day: "W1", value: 70 },
-  { day: "W2", value: 85 },
-  { day: "W3", value: 60 },
-  { day: "W4", value: 90 },
-];
+async function fetchWorkoutProgress(email, mode) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/workout-progress?email=${email}&mode=${mode}`,
+  );
+  const data = await res.json();
+  console.log("data:", data);
+  if (!data.success) throw new Error("Failed to fetch");
+  return data.data;
+}
+
+// ─── Custom Tooltip ───────────────────────────────────────────────────────────
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload?.length) {
@@ -36,9 +41,44 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+function ChartSkeleton() {
+  return (
+    <div className="h-48 sm:h-56 w-full flex items-end gap-2 px-2">
+      {[65, 80, 45, 90, 30, 0, 0].map((h, i) => (
+        <div
+          key={i}
+          className="flex-1 bg-white/5 animate-pulse rounded-sm"
+          style={{ height: `${h || 10}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+
 export default function WorkoutProgress() {
   const [mode, setMode] = useState("weekly");
-  const data = mode === "weekly" ? weeklyData : monthlyData;
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const { data: session } = authClient.useSession();
+  const email = session?.user?.email;
+
+  useEffect(() => {
+    if (!email) return;
+
+    setIsLoading(true);
+    setIsError(false);
+
+    fetchWorkoutProgress(email, mode)
+      .then((res) => setData(res))
+      .catch(() => setIsError(true))
+      .finally(() => setIsLoading(false));
+  }, [email, mode]);
 
   return (
     <div className="bg-[#0f0f0f] border border-neutral-900 p-5 flex flex-col gap-4">
@@ -48,7 +88,7 @@ export default function WorkoutProgress() {
           className="text-base sm:text-lg font-black uppercase tracking-wider text-white"
           style={{ fontFamily: "Archivo Narrow, sans-serif" }}
         >
-          WORKOUT PROGRESS
+          Workout Progress
         </h2>
         <div className="flex items-center gap-1">
           {["weekly", "monthly"].map((m) => (
@@ -69,51 +109,72 @@ export default function WorkoutProgress() {
       </div>
 
       {/* Chart */}
-      <div className="h-48 sm:h-56 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} barCategoryGap="30%">
-            <XAxis
-              dataKey="day"
-              axisLine={false}
-              tickLine={false}
-              tick={{
-                fill: "#525252",
-                fontSize: 10,
-                fontFamily: "JetBrains Mono, monospace",
-                fontWeight: 700,
-              }}
-            />
-            <YAxis hide />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(202,243,0,0.05)" }} />
-            <Bar dataKey="value" radius={[2, 2, 0, 0]}>
-              {data.map((entry, index) => (
-                <Cell
-                  key={index}
-                  fill={
-                    entry.current
-                      ? "url(#stripePattern)"
-                      : entry.value > 0
-                      ? "#caf300"
-                      : "#1a1a1a"
-                  }
-                />
-              ))}
-            </Bar>
-            <defs>
-              <pattern
-                id="stripePattern"
-                patternUnits="userSpaceOnUse"
-                width="8"
-                height="8"
-                patternTransform="rotate(45)"
-              >
-                <rect width="4" height="8" fill="#caf300" />
-                <rect x="4" width="4" height="8" fill="#2a2a00" />
-              </pattern>
-            </defs>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {isLoading ? (
+        <ChartSkeleton />
+      ) : isError ? (
+        <div className="h-48 flex items-center justify-center">
+          <p className="text-[10px] font-mono text-red-400 uppercase tracking-widest">
+            Failed to load data
+          </p>
+        </div>
+      ) : (
+        <div className="h-48 sm:h-56 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data || []} barCategoryGap="30%">
+              <defs>
+                <pattern
+                  id="stripePattern"
+                  patternUnits="userSpaceOnUse"
+                  width="8"
+                  height="8"
+                  patternTransform="rotate(45)"
+                >
+                  <rect width="4" height="8" fill="#caf300" />
+                  <rect x="4" width="4" height="8" fill="#2a2a00" />
+                </pattern>
+              </defs>
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: "#525252",
+                  fontSize: 10,
+                  fontFamily: "JetBrains Mono, monospace",
+                  fontWeight: 700,
+                }}
+              />
+              <YAxis hide domain={[0, 100]} />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ fill: "rgba(202,243,0,0.05)" }}
+              />
+              <Bar dataKey="value" radius={[2, 2, 0, 0]}>
+                {(data || []).map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={
+                      entry.current
+                        ? "url(#stripePattern)"
+                        : entry.value > 0
+                          ? "#caf300"
+                          : "#1a1a1a"
+                    }
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Footer */}
+      {!isLoading && !isError && data && (
+        <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest">
+          Based on your class bookings ·{" "}
+          {mode === "weekly" ? "Last 7 days" : "Last 4 weeks"}
+        </p>
+      )}
     </div>
   );
 }

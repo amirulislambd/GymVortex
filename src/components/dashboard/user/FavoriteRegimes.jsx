@@ -7,18 +7,21 @@ const regimes = [
     title: "POWER PLATEAU",
     duration: "45 MIN",
     category: "STRENGTH",
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80",
+    image:
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80",
   },
   {
     id: 2,
     title: "VELOCITY CORE",
     duration: "30 MIN",
     category: "CARDIO",
-    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80",
+    image:
+      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80",
   },
 ];
 
-export default function FavoriteRegimes() {
+export default function FavoriteRegimes({ favoriteClasses }) {
+  console.log("favoriteClasses:", favoriteClasses);
   return (
     <div className="bg-[#0f0f0f] border border-neutral-900 p-5 flex flex-col gap-4">
       {/* Header */}
@@ -40,7 +43,7 @@ export default function FavoriteRegimes() {
 
       {/* Cards */}
       <div className="grid grid-cols-2 gap-3">
-        {regimes.map((r) => (
+        {favoriteClasses.slice(0, 2).map((r) => (
           <div
             key={r.id}
             className="relative overflow-hidden group cursor-pointer border border-neutral-900 hover:border-[#caf300]/30 transition-all"
