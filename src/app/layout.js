@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata = {
   title: "GymVortex — Industrial Athletics",
   description: "Book elite classes, train with world-class coaches.",
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+  },
 };
 
 export default function RootLayout({ children }) {

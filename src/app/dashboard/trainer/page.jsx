@@ -5,6 +5,11 @@ import { GetMetricsTrainerDashboard } from "@/lib/api/dashboard";
 import { GetUserSession } from "@/lib/core/session";
 import React from "react";
 
+export const metadata = {
+  title: "Trainer Dashboard | GymVortex",
+  description: "GymVortex Trainer Panel - View metrics, students, and manage your schedules and classes.",
+};
+
 const TrainerOverview = async () => {
   const user = await GetUserSession();
   console.log("user:", user);

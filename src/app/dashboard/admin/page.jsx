@@ -8,6 +8,11 @@ import SystemMonitor from "@/components/dashboard/admin/SystemMonitor";
 import UserStatsChart from "@/components/dashboard/admin/UserStatsChart";
 import { GetUserSession } from "@/lib/core/session";
 
+export const metadata = {
+  title: "Admin Dashboard | GymVortex",
+  description: "GymVortex Admin Control Panel - Manage users, classes, logs, and perform administrative operations.",
+};
+
 const AdminOverview = async () => {
   const [user, statsData, logsData] = await Promise.all([
     GetUserSession(),

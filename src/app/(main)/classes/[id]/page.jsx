@@ -34,6 +34,23 @@ const DAY_SHORT = {
   6: "Sat",
 };
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  try {
+    const apiResponse = await GetClassById(id);
+    const classData = apiResponse?.data || apiResponse;
+    return {
+      title: classData?.title ? `${classData.title} | GymVortex` : "Class Details | GymVortex",
+      description: classData?.description?.slice(0, 155) || "View elite fitness class details at GymVortex.",
+    };
+  } catch (error) {
+    return {
+      title: "Class Details | GymVortex",
+      description: "View elite fitness class details at GymVortex.",
+    };
+  }
+}
+
 export default async function ClassDetails({ params }) {
   const { id } = await params;
 

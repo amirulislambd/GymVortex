@@ -22,6 +22,23 @@ const calculateEndTime = (startTime, duration) => {
   return `${String(endHours).padStart(2, "0")}:${String(endMinutes).padStart(2, "0")}`;
 };
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  try {
+    const apiResponse = await GetClassById(id);
+    const classData = apiResponse?.data || apiResponse;
+    return {
+      title: classData?.title ? `Confirm Booking: ${classData.title} | GymVortex` : "Confirm Booking | GymVortex",
+      description: `Confirm your booking for ${classData?.title || "fitness class"} at GymVortex.`,
+    };
+  } catch (error) {
+    return {
+      title: "Confirm Booking | GymVortex",
+      description: "Confirm your booking at GymVortex.",
+    };
+  }
+}
+
 export default async function ConfirmBookingPage({ params }) {
   const { id } = await params;
   const apiResponse = await GetClassById(id);

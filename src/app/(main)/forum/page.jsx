@@ -5,6 +5,11 @@ import { GetAllPosts } from "@/lib/api/forumPostActions";
 import { GetUserSession } from "@/lib/core/session";
 import React from "react";
 
+export const metadata = {
+  title: "Community Forum | GymVortex",
+  description: "Join the conversation. Discuss training strategies, ask questions to coaches, and connect with other athletes at GymVortex.",
+};
+
 const CommunityForum = async ({ searchParams }) => {
   const resolvedParams = await searchParams;
 

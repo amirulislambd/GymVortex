@@ -5,6 +5,11 @@ import FeaturedClasses from "@/components/home/FeaturedClasses";
 import HeroSection from "@/components/home/HeroSection";
 import StatsSection from "@/components/home/StatsSection";
 
+export const metadata = {
+  title: "GymVortex — Industrial Athletics & Elite Performance",
+  description: "Experience the ultimate training environment at GymVortex. Book elite classes, train with world-class coaches, and push your physical limits.",
+};
+
 export default function Home() {
   return (
     <>
