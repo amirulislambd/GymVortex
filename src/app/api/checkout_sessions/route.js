@@ -11,6 +11,7 @@ export async function POST(req) {
     const {
       className,
       classImage,
+      trainerName,
       PriceAmount,
       classId,
       userName,
@@ -38,7 +39,8 @@ export async function POST(req) {
 
       metadata: {
         className: className,
-        classId: classId || "", // Pass the MongoDB class ID to track in the webhook/success page
+        classId: classId || "",
+        trainerName: trainerName, // Pass the MongoDB class ID to track in the webhook/success page
         userImage: userImage,
         classImage: classImage,
       },

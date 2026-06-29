@@ -1,9 +1,11 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, Gear, Bars } from "@gravity-ui/icons";
 import { FiPlus } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
+import { FiSun, FiMoon } from "react-icons/fi";
 
 const NAV_ROUTES = [
   { href: "/dashboard/user", label: "" },
@@ -16,6 +18,22 @@ export default function Navbar({ onMenuToggle }) {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
   console.log("user:", user);
+
+  // Theme Toggling Logic
+  const [theme, setTheme] = useState("dark");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+    document.documentElement.className = savedTheme;
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
+    document.documentElement.className = nextTheme;
+  };
 
   return (
     <header className="w-full bg-[#0a0a0a] border-b border-neutral-900/80 sticky top-0 z-50">
@@ -67,6 +85,14 @@ export default function Navbar({ onMenuToggle }) {
 
         {/* Right */}
         <div className="flex items-center gap-1 md:gap-5">
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-neutral-400 hover:text-white transition-colors rounded-full border border-neutral-800/40 hover:border-[#caf300]/20 bg-neutral-900/40 cursor-pointer flex items-center justify-center"
+            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {theme === "dark" ? <FiSun className="size-4 text-[#caf300]" /> : <FiMoon className="size-4 text-[#caf300]" />}
+          </button>
+
           <button
             type="button"
             className="text-neutral-400 hover:text-white p-1 relative"

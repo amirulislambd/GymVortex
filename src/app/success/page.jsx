@@ -29,6 +29,7 @@ export default async function Success({ searchParams }) {
         userImage: metadata?.userImage || null,
         classId: metadata?.classId || "",
         classImage: metadata?.classImage || "",
+        trainerName: metadata?.trainerName || "",
         stripeSessionId: id,
       });
     } catch (error) {

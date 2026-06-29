@@ -36,6 +36,18 @@ export const GetClasses = async (params) => {
   }
 };
 
+
+export const GetAdminClasses = async (params) => {
+  const query = new URLSearchParams();
+  if (params?.page) query.set("page", params.page);
+  if (params?.limit) query.set("limit", params.limit);
+  if (params?.search) query.set("search", params.search);
+  if (params?.status) query.set("status", params.status);
+
+  return ServerFetch(`admin/classes?${query.toString()}`);
+};
+
+
 export const GetClassById = async (id) => {
   try {
     const data = await ServerFetch(`classes/${id}`);

@@ -12,16 +12,7 @@ import {
   GraduationCap,
   CircleDollar,
 } from "@gravity-ui/icons";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectIndicator,
-  SelectPopover,
-  ListBox,
-  ListBoxItem,
-  Label,
-} from "@heroui/react";
+import { Select, ListBox, Label } from "@heroui/react";
 import { ImSpinner9 } from "react-icons/im";
 import toast from "react-hot-toast";
 import { PostClass } from "@/lib/action/classes";
@@ -144,7 +135,7 @@ export default function AddClassForm({ classData }) {
         trainerEmail: user?.email || classData?.trainerEmail || "",
         trainerImage: user?.image || classData?.trainerImage || "",
       };
-
+      console.log("payload:", payload);
       if (isEditMode && classData?._id) {
         payload._id = classData._id;
       }
@@ -159,7 +150,7 @@ export default function AddClassForm({ classData }) {
         );
         reset();
         setPreviewImage("");
-        router.push(`${isEditMode ? "/dashboard/trainer/my-classes" : "/"}`);
+        router.push("/dashboard/trainer/my-classes");
       }
     } catch (error) {
       toast.error("Failed to execute database transaction.");
@@ -241,96 +232,94 @@ export default function AddClassForm({ classData }) {
               {/* Dropdowns */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Category Selector */}
-                <div className="flex flex-col gap-2">
-                  <Controller
-                    name="category"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        selectedKeys={field.value ? [field.value] : []}
-                        onSelectionChange={(keys) => {
-                          const value = Array.from(keys)[0];
-                          field.onChange(value);
-                        }}
-                        className="w-full"
-                      >
-                        <Label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                          <Persons className="size-3.5" /> Category
-                        </Label>
-                        <SelectTrigger className="bg-[#353534]/50 border border-[#444932]/50 p-4 font-sans text-white focus:outline-none data-[hover=true]:border-[#caf300] rounded-sm flex justify-between items-center w-full min-h-[58px]">
-                          <SelectValue className="text-white font-sans text-sm" />
-                          <SelectIndicator className="text-white" />
-                        </SelectTrigger>
-                        <SelectPopover className="bg-[#1c1b1b] border border-[#444932]/50 rounded-sm shadow-xl mt-1">
-                          <ListBox className="p-1">
-                            {[
-                              "Powerlifting",
-                              "Metabolic Conditioning",
-                              "Industrial Yoga",
-                              "Mobility Repair",
-                            ].map((cat) => (
-                              <ListBoxItem
-                                key={cat}
-                                textValue={cat}
-                                className="p-3 text-sm text-white rounded-sm cursor-pointer transition-colors block w-full data-[hover=true]:bg-[#caf300] data-[hover=true]:text-black"
-                              >
-                                <span className="text-inherit block w-full">
-                                  {cat}
-                                </span>
-                              </ListBoxItem>
-                            ))}
-                          </ListBox>
-                        </SelectPopover>
-                      </Select>
-                    )}
-                  />
-                </div>
+                <Controller
+                  name="category"
+                  control={control}
+                  rules={{ required: "Category is required" }}
+                  render={({ field }) => (
+                    <Select
+                      selectedKeys={field.value ? [field.value] : []}
+                      onSelectionChange={(keys) => {
+                        const value =
+                          typeof keys === "string"
+                            ? keys
+                            : keys.currentKey || [...keys][0];
+
+                        field.onChange(value);
+                      }}
+                    >
+                      <Label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                        <Persons className="size-3.5" />
+                        Category
+                      </Label>
+
+                      <Select.Trigger className="bg-[#353534]/50 border border-[#444932]/50 rounded-sm min-h-[58px] px-4 text-white">
+                        <Select.Value placeholder="Select Category" />
+                        <Select.Indicator />
+                      </Select.Trigger>
+
+                      <Select.Popover className="bg-[#1c1b1b] border border-[#444932]/50 rounded-sm shadow-xl">
+                        <ListBox className="p-1">
+                          {[
+                            "Powerlifting",
+                            "Metabolic Conditioning",
+                            "Industrial Yoga",
+                            "Mobility Repair",
+                          ].map((cat) => (
+                            <ListBox.Item key={cat} id={cat} textValue={cat}>
+                              <Label>{cat}</Label>
+                            </ListBox.Item>
+                          ))}
+                        </ListBox>
+                      </Select.Popover>
+                    </Select>
+                  )}
+                />
 
                 {/* Difficulty Selector */}
-                <div className="flex flex-col gap-2">
-                  <Controller
-                    name="difficulty"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        selectedKeys={field.value ? [field.value] : []}
-                        onSelectionChange={(keys) => {
-                          const value = Array.from(keys)[0];
-                          field.onChange(value);
-                        }}
-                        className="w-full"
-                      >
-                        <Label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                          <GraduationCap className="size-3.5" /> Difficulty
-                        </Label>
-                        <SelectTrigger className="bg-[#353534]/50 border border-[#444932]/50 p-4 font-sans text-white focus:outline-none data-[hover=true]:border-[#caf300] rounded-sm flex justify-between items-center w-full min-h-[58px]">
-                          <SelectValue className="text-white font-sans text-sm" />
-                          <SelectIndicator className="text-white" />
-                        </SelectTrigger>
-                        <SelectPopover className="bg-[#1c1b1b] border border-[#444932]/50 rounded-sm shadow-xl mt-1">
-                          <ListBox className="p-1">
-                            {[
-                              "Level 1 - Foundational",
-                              "Level 2 - Progressive",
-                              "Level 3 - High Output",
-                              "Level 4 - Elite Protocol",
-                            ].map((lvl) => (
-                              <ListBoxItem
-                                key={lvl}
-                                textValue={lvl}
-                                className="p-3 text-sm text-white rounded-sm cursor-pointer transition-colors block w-full data-[hover=true]:bg-[#caf300] data-[hover=true]:text-black"
-                              >
-                                <span className="text-inherit block w-full">
-                                  {lvl}
-                                </span>
-                              </ListBoxItem>
-                            ))}
-                          </ListBox>
-                        </SelectPopover>
-                      </Select>
-                    )}
-                  />
-                </div>
+                <Controller
+                  name="difficulty"
+                  control={control}
+                  rules={{ required: "Difficulty is required" }}
+                  render={({ field }) => (
+                    <Select
+                      selectedKeys={field.value ? [field.value] : []}
+                      onSelectionChange={(keys) => {
+                        const value =
+                          typeof keys === "string"
+                            ? keys
+                            : keys.currentKey || [...keys][0];
+
+                        field.onChange(value);
+                      }}
+                    >
+                      <Label className="font-mono text-xs text-[#c5c9ac] uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                        <GraduationCap className="size-3.5" />
+                        Difficulty
+                      </Label>
+
+                      <Select.Trigger className="bg-[#353534]/50 border border-[#444932]/50 rounded-sm min-h-[58px] px-4 text-white">
+                        <Select.Value placeholder="Select Difficulty" />
+                        <Select.Indicator />
+                      </Select.Trigger>
+
+                      <Select.Popover className="bg-[#1c1b1b] border border-[#444932]/50 rounded-sm shadow-xl">
+                        <ListBox className="p-1">
+                          {[
+                            "Level 1 - Foundational",
+                            "Level 2 - Progressive",
+                            "Level 3 - High Output",
+                            "Level 4 - Elite Protocol",
+                          ].map((lvl) => (
+                            <ListBox.Item key={lvl} id={lvl} textValue={lvl}>
+                              <Label>{lvl}</Label>
+                            </ListBox.Item>
+                          ))}
+                        </ListBox>
+                      </Select.Popover>
+                    </Select>
+                  )}
+                />
               </div>
             </div>
           </div>

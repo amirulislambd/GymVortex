@@ -2,14 +2,13 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GetClasses } from "@/lib/api/getClasses";
+import { GetAdminClasses, GetClasses } from "@/lib/api/getClasses";
 import { motion, AnimatePresence } from "framer-motion";
 
 import ClassTable from "./ClassTable";
 import ClassStats from "./ClassStats";
 import { DeleteClass, UpdateClass } from "@/lib/action/classes";
 import DynamicDeleteModal from "@/components/shared/DynamicDeleteModal";
-
 
 export default function ClassDashboardContainer() {
   const router = useRouter();
@@ -18,7 +17,7 @@ export default function ClassDashboardContainer() {
   const currentSearchUrl = searchParams.get("search") || "";
   const currentStatusUrl = searchParams.get("status") || "ALL";
   const currentPageUrl = parseInt(searchParams.get("page")) || 1;
-  const limitPerPage = 5; 
+  const limitPerPage = 5;
 
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +28,7 @@ export default function ClassDashboardContainer() {
   const [dashboardStats, setDashboardStats] = useState({
     pendingCount: 0,
     approvedCount: 0,
-    rejectedCount: 0
+    rejectedCount: 0,
   });
 
   const [modalConfig, setModalConfig] = useState({
@@ -73,41 +72,44 @@ export default function ClassDashboardContainer() {
     setSearch(currentSearchUrl);
   }, [currentSearchUrl]);
 
-  const loadClassesData = useCallback(async (ignore = false) => {
-    setLoading(true);
-    try {
-      const res = await GetClasses({
-        page: currentPageUrl,
-        limit: limitPerPage,
-        search: currentSearchUrl,
-        status: currentStatusUrl, 
-      });
+  const loadClassesData = useCallback(
+    async (ignore = false) => {
+      setLoading(true);
+      try {
+        const res = await GetAdminClasses({
+          page: currentPageUrl,
+          limit: limitPerPage,
+          search: currentSearchUrl,
+          status: currentStatusUrl,
+        });
 
-      if (ignore) return;
+        if (ignore) return;
 
-      if (res?.success) {
-        setClasses(Array.isArray(res.data) ? res.data : []);
-        setTotalPages(res.pagination?.totalPages || 1);
-        setTotalClasses(res.pagination?.totalItems || 0);
+        if (res?.success) {
+          setClasses(Array.isArray(res.data) ? res.data : []);
+          setTotalPages(res.pagination?.totalPages || 1);
+          setTotalClasses(res.pagination?.totalItems || 0);
 
-        if (res.stats) {
-          setDashboardStats(res.stats);
+          if (res.stats) {
+            setDashboardStats(res.stats);
+          } else {
+            setDashboardStats({
+              pendingCount: res.pagination?.totalItems || 0,
+              approvedCount: 128,
+              rejectedCount: 3,
+            });
+          }
         } else {
-          setDashboardStats({
-            pendingCount: res.pagination?.totalItems || 0, 
-            approvedCount: 128, 
-            rejectedCount: 3
-          });
+          setClasses([]);
         }
-      } else {
-        setClasses([]);
+      } catch (error) {
+        console.log("Error loading admin dashboard classes:", error);
+      } finally {
+        if (!ignore) setLoading(false);
       }
-    } catch (error) {
-      console.log("Error loading admin dashboard classes:", error);
-    } finally {
-      if (!ignore) setLoading(false);
-    }
-  }, [currentPageUrl, currentSearchUrl, currentStatusUrl]);
+    },
+    [currentPageUrl, currentSearchUrl, currentStatusUrl],
+  );
 
   useEffect(() => {
     let ignore = false;
@@ -123,7 +125,7 @@ export default function ClassDashboardContainer() {
 
   const handleAction = (id, newStatus, itemTitle = "Selected Class Matrix") => {
     const isApprove = newStatus === "approved";
-    
+
     setModalConfig({
       isOpen: true,
       itemTitle: `[ACTION: ${newStatus.toUpperCase()}] - ${itemTitle}`,
@@ -136,14 +138,16 @@ export default function ClassDashboardContainer() {
           const result = await res.json();
 
           if (result.success) {
-            router.refresh(); 
-            loadClassesData(); 
+            router.refresh();
+            loadClassesData();
           }
         } catch (error) {
           console.error("Action pipeline failed:", error);
         } finally {
           setClasses((prev) =>
-            prev.map((cls) => (cls._id === id ? { ...cls, status: newStatus } : cls))
+            prev.map((cls) =>
+              cls._id === id ? { ...cls, status: newStatus } : cls,
+            ),
           );
           closeModal();
         }
@@ -164,7 +168,7 @@ export default function ClassDashboardContainer() {
           const result = await res.json();
 
           if (result.success) {
-            router.refresh(); 
+            router.refresh();
             loadClassesData();
           }
         } catch (error) {
