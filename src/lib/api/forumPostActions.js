@@ -24,6 +24,7 @@ export const GetForumPostsById = async (id) => {
   return data;
 };
 
+
 export const GetCommentsAction = async (postId) => {
   return ServerFetch(`comments/${postId}`);
 };

@@ -5,6 +5,6 @@ export const metadata = {
   description: "Manage your fitness journey on GymVortex.",
 };
 
-export default function DashboardLayout({ children }) {
+export default async function DashboardLayout({ children }) {
   return <DashboardShell>{children}</DashboardShell>;
 }

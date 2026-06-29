@@ -115,9 +115,9 @@ export default function Footer() {
             </h3>
 
             <div className="space-y-4">
-              {NAVIGATION_LINKS.map((item) => (
+              {NAVIGATION_LINKS.map((item, index) => (
                 <Link
-                  key={item.href}
+                  key={index}
                   href={item.href}
                   className="block text-neutral-400 hover:text-[#caf300] transition"
                 >

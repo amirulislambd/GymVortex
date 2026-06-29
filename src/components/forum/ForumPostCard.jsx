@@ -93,7 +93,7 @@ const ForumPostCard = ({ post, user }) => {
         {/* TITLE */}
         <h3
           className="
-            line-clamp-2
+            line-clamp-1
             text-xl
             font-black
             uppercase

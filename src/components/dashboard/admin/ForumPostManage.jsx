@@ -29,7 +29,6 @@ export default function ForumPostManage({ initialData }) {
     currentPage: 1,
   };
 
-  // ✅ Fix 1 — Debounce: টাইপ করার সাথে সাথে search
   useEffect(() => {
     const timer = setTimeout(() => {
       const params = new URLSearchParams();

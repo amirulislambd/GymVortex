@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "@gravity-ui/icons";
+import { FaUserAlt } from "react-icons/fa";
 
 export default function ClassCard({ item }) {
   if (!item) return null;
@@ -25,13 +26,20 @@ export default function ClassCard({ item }) {
 
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden">
-        <motion.img
-          whileHover={{ scale: 1.08 }}
-          transition={{ duration: 0.7 }}
-          src={item?.image || "https://i.ibb.co/NnYqc09c/screen.png"}
-          alt={item?.title}
-          className="w-full h-full object-cover"
-        />
+        <div className="relative">
+          <motion.img
+            whileHover={{ scale: 1.08 }}
+            transition={{ duration: 0.7 }}
+            src={item?.image || "https://i.ibb.co/NnYqc09c/screen.png"}
+            alt={item?.title}
+            className="w-full h-full object-cover"
+          />
+
+          <span className="absolute top-3 right-3 flex items-center gap-2 rounded-full bg-[#111111]/20 px-3 py-1.5 text-xs font-semibold text-[#91da0a] shadow-lg backdrop-blur-sm">
+            <FaUserAlt className="text-sm" />
+            <span>{item?.bookingCount || 0}</span>
+          </span>
+        </div>
 
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
@@ -53,7 +61,7 @@ export default function ClassCard({ item }) {
       <div className="p-5 flex flex-col flex-1">
         {/* Title + Price */}
         <div className="flex justify-between items-start gap-3">
-          <h3 className="text-white font-black text-lg uppercase leading-tight line-clamp-2 group-hover:text-[#caf300] transition-colors duration-500">
+          <h3 className="text-white font-black text-lg uppercase leading-tight line-clamp-1 group-hover:text-[#caf300] transition-colors duration-500">
             {item?.title || "Untitled Class"}
           </h3>
 
@@ -79,11 +87,13 @@ export default function ClassCard({ item }) {
 
         {/* Trainer */}
         <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/10">
-          <img
-            src={item?.trainerImage || "https://i.ibb.co/NnYqc09c/screen.png"}
-            alt={item?.trainerName}
-            className="w-8 h-8 rounded-full object-cover border border-[#caf300]/30"
-          />
+          <div className="relative">
+            <img
+              src={item?.trainerImage || "https://i.ibb.co/NnYqc09c/screen.png"}
+              alt={item?.trainerName}
+              className="w-8 h-8 rounded-full object-cover border border-[#caf300]/30"
+            />
+          </div>
 
           <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-wider text-neutral-500">

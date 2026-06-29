@@ -3,6 +3,7 @@ import ClassActions from "@/components/classes/ClassActions";
 import { CheckFavorite } from "@/lib/api/favorite";
 import { CheckBooking } from "@/lib/api/booking";
 import { GetUserSession } from "@/lib/core/session";
+import { redirect } from "next/navigation";
 
 const calculateEndTime = (startTime, duration) => {
   if (!startTime || !duration) return "TBD";
@@ -45,6 +46,9 @@ export default async function ClassDetails({ params }) {
 
   let isBooked = false;
   let isFavorite = false;
+  if (!user) {
+    redirect(`/login?redirect=/classes/${id}`);
+  }
 
   if (userEmail) {
     const [bookingRes, favoriteRes] = await Promise.all([

@@ -21,7 +21,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/";
+  const redirectTo = searchParams.get("redirect") || "/";
 
   // Initialize react-hook-form modules
   const {
@@ -52,7 +52,9 @@ export default function LoginForm() {
             router.push(redirectTo);
           },
           onError: (ctx) => {
-            toast.error(ctx.error.message || "Authentication protocols failed.");
+            toast.error(
+              ctx.error.message || "Authentication protocols failed.",
+            );
           },
         },
       });
@@ -69,7 +71,7 @@ export default function LoginForm() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: redirectTo,
       });
     } catch (error) {
       console.error("Google Auth error:", error);

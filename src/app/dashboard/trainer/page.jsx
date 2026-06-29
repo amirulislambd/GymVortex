@@ -10,7 +10,7 @@ const TrainerOverview = async () => {
   console.log("user:", user);
   const metrics = await GetMetricsTrainerDashboard(user.email);
   const totalEnrolledStudents = metrics.students;
-  console.log("totalEnrolled:", totalEnrolledStudents);
+  console.log("totalEnrolledStudents:", totalEnrolledStudents);
 
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-gym-bg text-gym-text min-h-screen">

@@ -1,3 +1,4 @@
+import CallToAction from "@/components/home/CallToAction";
 import CommunityFed from "@/components/home/CommunityFed";
 import EliteTrainers from "@/components/home/EliteTrainers";
 import FeaturedClasses from "@/components/home/FeaturedClasses";
@@ -13,6 +14,7 @@ export default function Home() {
         <FeaturedClasses />
         <EliteTrainers />
         <CommunityFed />
+        <CallToAction />
       </main>
     </>
   );

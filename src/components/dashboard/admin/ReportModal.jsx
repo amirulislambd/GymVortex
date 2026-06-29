@@ -22,8 +22,6 @@ export default function ReportModal({ isOpen, onClose, data }) {
     };
   }, [isOpen, onClose]);
 
-  const hasData = data && Object.keys(data).length > 0;
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -35,50 +33,52 @@ export default function ReportModal({ isOpen, onClose, data }) {
           onClick={onClose}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            initial={{ opacity: 0, scale: 0.9, y: 40 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+            exit={{ opacity: 0, scale: 0.9, y: 40 }}
             transition={{ duration: 0.25 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl bg-[#111] border border-[#caf300]/20 shadow-[0_0_40px_rgba(202,243,0,0.15)]"
+            className="w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl border border-[#caf300]/20 bg-[#111] shadow-[0_0_60px_rgba(202,243,0,0.15)]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+            <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-[#caf300]/10 border border-[#caf300]/20 flex items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#caf300]/10 border border-[#caf300]/20">
                   <FaChartBar className="text-[#caf300] text-xl" />
                 </div>
 
                 <div>
-                  <h2 className="text-xl font-bold text-white uppercase">
+                  <h2 className="text-xl font-black uppercase tracking-wider text-white">
                     System Report
                   </h2>
-                  <p className="text-xs text-neutral-500 uppercase tracking-widest">
-                    Live Analytics Overview
+                  <p className="text-xs uppercase tracking-widest text-neutral-500">
+                    Live Analytics & Platform Overview
                   </p>
                 </div>
               </div>
 
               <button
                 onClick={onClose}
-                className="w-10 h-10 rounded-lg border border-red-500/30 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-red-500/30 text-red-400 transition hover:bg-red-500 hover:text-white"
               >
                 <FaTimes />
               </button>
             </div>
 
             {/* Body */}
-            <div className="overflow-y-auto max-h-[calc(90vh-90px)] p-6 custom-scrollbar">
-              {hasData ? (
+            <div className="max-h-[calc(90vh-90px)] overflow-y-auto p-6 custom-scrollbar">
+              {data?.length ? (
                 <ReportTable data={data} />
               ) : (
-                <div className="h-[350px] flex flex-col items-center justify-center">
-                  <FaChartBar className="text-6xl text-[#caf300]/30 mb-4" />
-                  <h3 className="text-white text-2xl font-bold">
-                    No Report Available
+                <div className="flex h-80 flex-col items-center justify-center text-center">
+                  <FaChartBar className="mb-5 text-6xl text-[#caf300]/40" />
+
+                  <h3 className="text-2xl font-bold text-white">
+                    No Report Found
                   </h3>
-                  <p className="text-neutral-500 mt-2">
-                    System analytics data could not be found.
+
+                  <p className="mt-2 text-neutral-500">
+                    There is currently no report available.
                   </p>
                 </div>
               )}

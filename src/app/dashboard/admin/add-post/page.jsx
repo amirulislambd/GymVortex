@@ -1,7 +1,7 @@
 import AddForumPostForm from "@/components/dashboard/trainer/AddForumPostForm";
 import React from "react";
 
-const AdminPost = () => {
+const AdminPost = async () => {
   return <AddForumPostForm />;
 };
 

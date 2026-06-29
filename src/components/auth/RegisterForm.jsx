@@ -34,7 +34,7 @@ const RegisterForm = () => {
   const passwordValue = watch("password", "");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/";
+  const redirectTo = searchParams.get("redirect") || "/";
 
   function handleAvatarChange(event) {
     const file = event.target.files?.[0];

@@ -16,6 +16,7 @@ export const metadata = { title: "Dashboard — GymVortex" };
 export default async function UserOverviewPage() {
   const user = await GetUserSession();
 
+
   // 1. First, update the user's daily activity, streak, and rank in the database
   const userActivity = await UpdateUserActivity(user.email);
 
