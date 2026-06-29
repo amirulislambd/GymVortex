@@ -29,17 +29,19 @@ export default function MyForumPosts({
   const [deletingId, setDeletingId] = useState(null);
   const [confirmId, setConfirmId] = useState(null);
 
+  const basePath = role === "admin" ? "/dashboard/admin/my-posts" : "/dashboard/trainer/my-posts";
+
   // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.push(`/dashboard/trainer/my-posts?page=1&search=${search}`);
+      router.push(`${basePath}?page=1&search=${search}`);
     }, 400);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, basePath, router]);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
-    router.push(`/dashboard/trainer/my-posts?page=${newPage}&search=${search}`);
+    router.push(`${basePath}?page=${newPage}&search=${search}`);
   };
 
   const handleDelete = async (postId) => {
@@ -61,9 +63,7 @@ export default function MyForumPosts({
   };
 
   const handleEdit = (postId) => {
-    router.push(
-      `${role === "trainer" ? "/dashboard/trainer/my-posts" : "/dashboard/admin/my-posts"}/${postId}`,
-    );
+    router.push(`${basePath}/${postId}`);
   };
 
   if (posts.length === 0) {

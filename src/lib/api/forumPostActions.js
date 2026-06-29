@@ -7,12 +7,7 @@ export const GetAllPosts = async (page, limit = 10, search = "") => {
   return res;
 };
 
-export const GetMyForumPosts = async (
-  email,
-  page = 1,
-  limit = 9,
-  search = "",
-) => {
+export const GetMyForumPosts = async (email, page = 1, limit = 10, search = "") => {
   const response = await ServerFetch(
     `myForumPosts?email=${email}&page=${page}&limit=${limit}&search=${search}`,
   );
