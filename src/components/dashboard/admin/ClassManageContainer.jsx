@@ -196,7 +196,7 @@ export default function ClassDashboardContainer() {
 
         {/*  SEARCH & FILTER CONTROLS */}
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:w-64">
+          <div className="relative flex-1 min-w-0 md:w-64">
             <input
               type="text"
               value={search}

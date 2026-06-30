@@ -21,7 +21,7 @@ const ManageClasses = async () => {
   const initialClasses = await getClassesData();
 
   return (
-    <div className="flex-1 p-4 md:p-12 bg-[#0e0e0e] text-[#e5e2e1] min-h-screen font-mono">
+    <div className="flex-1 py-4 md:p-12 bg-[#0e0e0e] text-[#e5e2e1] min-h-screen font-mono">
       <ClassManageContainer initialClasses={initialClasses} />
     </div>
   );

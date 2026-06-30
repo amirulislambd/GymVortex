@@ -8,15 +8,21 @@ import {
 } from "@gravity-ui/icons";
 import { DASHBOARD_ROUTES } from "@/config/dashboardRoutes";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar({ mobileOpen, onClose }) {
   const pathname = usePathname();
-
+  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
   const role = user?.role || "user";
-  
+
   const routes = DASHBOARD_ROUTES[role] || DASHBOARD_ROUTES.user;
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    router.refresh('/login');
+  };
 
   return (
     <>
@@ -29,14 +35,14 @@ export default function Sidebar({ mobileOpen, onClose }) {
           role={role}
           user={user}
           isPending={isPending}
+          handleSignOut={handleSignOut}
         />
       </aside>
 
       {/* Mobile Drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-[280px] bg-[#0a0a0a] border-r border-neutral-900/80 z-40 flex flex-col transition-transform duration-300 md:hidden ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-[280px] bg-[#0a0a0a] border-r border-neutral-900/80 z-40 flex flex-col transition-transform duration-300 md:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-neutral-900/80">
           <h1
@@ -56,6 +62,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
           role={role}
           user={user}
           isPending={isPending}
+          handleSignOut={handleSignOut}
         />
       </aside>
     </>
@@ -68,7 +75,7 @@ const ROLE_BADGE = {
   admin: { label: "Administrator", color: "text-orange-400" },
 };
 
-function SidebarContent({ pathname, onClose, routes, role, user, isPending }) {
+function SidebarContent({ pathname, onClose, routes, role, user, isPending, handleSignOut }) {
   const badge = ROLE_BADGE[role] || ROLE_BADGE.user;
 
   const initials = user?.name
@@ -81,7 +88,7 @@ function SidebarContent({ pathname, onClose, routes, role, user, isPending }) {
 
         {/* User Profile */}
         <div className="flex items-center gap-3.5 bg-[#111111] border border-neutral-900/40 p-3">
-          
+
           {/* Avatar */}
           <div className="w-11 h-11 shrink-0 bg-neutral-900 border border-[#caf300]/40 flex items-center justify-center relative overflow-hidden">
             {isPending ? (
@@ -148,11 +155,10 @@ function SidebarContent({ pathname, onClose, routes, role, user, isPending }) {
                 key={route.href}
                 href={route.href}
                 onClick={onClose}
-                className={`flex items-center gap-4 px-4 py-3.5 font-bold text-xs uppercase tracking-widest transition-all duration-200 border-l-2 ${
-                  isActive
-                    ? "bg-[#caf300] text-[#0a0a0a] border-[#caf300] shadow-[0_0_15px_rgba(202,243,0,0.15)]"
-                    : "text-neutral-400 border-transparent hover:text-white hover:bg-neutral-900/40 hover:border-neutral-700"
-                }`}
+                className={`flex items-center gap-4 px-4 py-3.5 font-bold text-xs uppercase tracking-widest transition-all duration-200 border-l-2 ${isActive
+                  ? "bg-[#caf300] text-[#0a0a0a] border-[#caf300] shadow-[0_0_15px_rgba(202,243,0,0.15)]"
+                  : "text-neutral-400 border-transparent hover:text-white hover:bg-neutral-900/40 hover:border-neutral-700"
+                  }`}
                 style={{ fontFamily: "JetBrains Mono, monospace" }}
               >
                 <Icon className="size-4 shrink-0" />
@@ -175,7 +181,7 @@ function SidebarContent({ pathname, onClose, routes, role, user, isPending }) {
         </Link>
         <button
           type="button"
-          onClick={() => authClient.signOut()}
+          onClick={handleSignOut}
           className="flex items-center gap-4 px-4 py-3 text-xs font-bold uppercase tracking-widest text-neutral-500 hover:text-red-500 transition-colors text-left w-full"
           style={{ fontFamily: "JetBrains Mono, monospace" }}
         >

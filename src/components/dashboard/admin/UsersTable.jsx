@@ -23,7 +23,6 @@ export default function UsersTable({ users, currentPage, totalPages }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // মডাল কন্ট্রোল করার জন্য স্টেটস
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
     itemTitle: "",
@@ -106,7 +105,7 @@ export default function UsersTable({ users, currentPage, totalPages }) {
   };
 
   return (
-    <div className="bg-zinc-950 border border-zinc-900 rounded-sm p-4 mt-6">
+    <div className="bg-zinc-950 md:border border-zinc-900 rounded-sm p-2 md:p-4 mt-6">
       {/* 🖥️ DESKTOP VIEW */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">

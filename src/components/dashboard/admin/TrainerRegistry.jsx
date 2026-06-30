@@ -61,7 +61,8 @@ const TrainerRegistry = ({ initialTrainers }) => {
         />
       </div>
 
-      <div className="w-full bg-[#131313] border border-[#444932]">
+      {/* DESKTOP VIEW */}
+      <div className="hidden md:block w-full bg-[#131313] border border-[#444932]">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-[#444932] text-[#d4ff00] text-[11px] uppercase">
@@ -91,7 +92,7 @@ const TrainerRegistry = ({ initialTrainers }) => {
                 <td className="px-6 py-4 text-right">
                   <button
                     onClick={() => setSelectedTrainer(t)}
-                    className="border border-red-500/60 text-red-400 px-4 py-1 text-[10px] hover:bg-red-600 hover:text-white transition-all"
+                    className="border border-red-500/60 text-red-400 px-4 py-1 text-[10px] hover:bg-red-600 hover:text-white transition-all cursor-pointer"
                   >
                     Demote
                   </button>
@@ -100,6 +101,49 @@ const TrainerRegistry = ({ initialTrainers }) => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* MOBILE VIEW */}
+      <div className="block md:hidden space-y-3">
+        {filteredTrainers.map((t) => (
+          <div
+            key={t._id}
+            className="bg-[#111111] border border-zinc-800/80 hover:border-[#caf300]/30 transition-all duration-300 p-4 space-y-3 rounded-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]"
+          >
+            <div className="flex items-center gap-3">
+              <img
+                src={t.image || t.userImage || "/default-avatar.png"}
+                className="w-10 h-10 rounded-full object-cover border border-[#444932]/60"
+                alt="avatar"
+              />
+              <div className="min-w-0 flex-1">
+                <h4 className="font-bold text-[#e5e2e1] truncate text-sm">
+                  {t.name || t.userName}
+                </h4>
+                <p className="text-xs text-[#c5c9ac]/80 font-mono truncate mt-0.5">
+                  {t.email || t.userEmail}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-zinc-800/60 pt-2.5">
+              <div>
+                <span className="text-[9px] uppercase text-[#c5c9ac] tracking-wide block">
+                  PLAN
+                </span>
+                <span className="text-[10px] font-bold text-[#d4ff00] uppercase">
+                  {t.plan || "Free"}
+                </span>
+              </div>
+              <button
+                onClick={() => setSelectedTrainer(t)}
+                className="border border-red-500/60 text-red-400 px-4 py-1.5 text-[10px] font-bold uppercase hover:bg-red-600 hover:text-white transition-all cursor-pointer"
+              >
+                Demote
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       <DynamicDeleteModal

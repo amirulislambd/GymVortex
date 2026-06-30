@@ -33,7 +33,7 @@ export default function DashboardShell({ children }) {
           />
         )}
 
-        <main className="flex-1 bg-[#0d0d0d] p-6 min-h-screen">
+        <main className="flex-1 min-w-0 bg-[#0d0d0d] p-4 md:p-6 min-h-screen">
           {children}
         </main>
 

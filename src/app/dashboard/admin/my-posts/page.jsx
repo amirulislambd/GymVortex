@@ -1,4 +1,3 @@
-// app/dashboard/trainer/my-posts/page.js
 import MyForumPosts from "@/components/forum/MyForumPosts";
 import { GetMyForumPosts } from "@/lib/api/forumPostActions";
 import { GetUserSession } from "@/lib/core/session";

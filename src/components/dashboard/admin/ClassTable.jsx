@@ -16,7 +16,7 @@ const ClassTable = ({
 
 }) => {
 
- 
+
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -44,7 +44,6 @@ const ClassTable = ({
 
   return (
     <div className="w-full space-y-4 font-mono">
-      
       <AnimatePresence mode="wait">
         <motion.div
           key={
@@ -57,7 +56,6 @@ const ClassTable = ({
           exit="exit"
           className="w-full"
         >
-         
           <div className="hidden md:block overflow-x-auto border border-[#444932] bg-[#0e0e0e]">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -77,7 +75,6 @@ const ClassTable = ({
                     variants={itemVariants}
                     className="hover:bg-[#161616] transition-colors"
                   >
-                 
                     <td className="p-4 w-24">
                       <div className="w-16 h-16 rounded-sm overflow-hidden border border-[#444932] bg-[#201f1f] flex items-center justify-center flex-shrink-0">
                         {cls.classImage || cls.image ? (
@@ -94,7 +91,6 @@ const ClassTable = ({
                       </div>
                     </td>
 
-                   
                     <td className="p-4">
                       <div className="flex flex-col gap-0.5">
                         <span className="text-[10px] uppercase text-[#caf300]/80 tracking-widest font-semibold">
@@ -111,13 +107,12 @@ const ClassTable = ({
 
                     <td className="p-4">
                       <span
-                        className={`px-2 py-0.5 text-[10px] font-bold border uppercase ${
-                          cls.status?.toLowerCase() === "approved"
+                        className={`px-2 py-0.5 text-[10px] font-bold border uppercase ${cls.status?.toLowerCase() === "approved"
                             ? "bg-[#caf300]/10 border-[#caf300] text-[#caf300]"
                             : cls.status?.toLowerCase() === "rejected"
                               ? "bg-red-950/40 border-red-500 text-red-400"
                               : "bg-[#caf300]/5 border-[#caf300]/40 text-[#caf300]/70 animate-pulse"
-                        }`}
+                          }`}
                       >
                         {cls.status || "PENDING"}
                       </span>
@@ -126,9 +121,9 @@ const ClassTable = ({
                     <td className="p-4 text-xs text-gray-400">
                       {cls.createdAt
                         ? new Date(cls.createdAt)
-                            .toISOString()
-                            .slice(0, 16)
-                            .replace("T", " ")
+                          .toISOString()
+                          .slice(0, 16)
+                          .replace("T", " ")
                         : "2026-06-25 12:00"}
                     </td>
 
@@ -140,11 +135,10 @@ const ClassTable = ({
                             handleAction(cls._id, "approved", cls.title)
                           }
                           disabled={cls.status?.toLowerCase() === "approved"}
-                          className={`px-3 py-1 text-[11px] font-bold uppercase tracking-tighter border transition-all ${
-                            cls.status?.toLowerCase() === "approved"
+                          className={`px-3 py-1 text-[11px] font-bold uppercase tracking-tighter border transition-all ${cls.status?.toLowerCase() === "approved"
                               ? "border-neutral-800 text-neutral-600 cursor-not-allowed bg-transparent"
                               : "border-[#caf300] bg-[#caf300] text-black hover:bg-transparent hover:text-[#caf300]"
-                          }`}
+                            }`}
                         >
                           Approve
                         </button>
@@ -155,11 +149,10 @@ const ClassTable = ({
                             handleAction(cls._id, "rejected", cls.title)
                           }
                           disabled={cls.status?.toLowerCase() === "rejected"}
-                          className={`px-3 py-1 text-[11px] font-bold uppercase tracking-tighter border transition-all ${
-                            cls.status?.toLowerCase() === "rejected"
+                          className={`px-3 py-1 text-[11px] font-bold uppercase tracking-tighter border transition-all ${cls.status?.toLowerCase() === "rejected"
                               ? "border-neutral-800 text-neutral-600 cursor-not-allowed bg-transparent"
                               : "border-[#f34500]/40 text-[#f34500] hover:bg-[#f34500] hover:text-black"
-                          }`}
+                            }`}
                         >
                           Reject
                         </button>
@@ -200,7 +193,7 @@ const ClassTable = ({
                 key={cls._id}
                 layout
                 variants={itemVariants}
-                className="bg-[#141414] border border-[#444932] p-4 space-y-3"
+                className="bg-[#111111] border border-zinc-800/80 hover:border-[#caf300]/30 transition-all duration-300 p-4 space-y-3 rounded-sm shadow-[0_4px_15px_rgba(0,0,0,0.15)]"
               >
                 <div className="flex gap-3">
                   <div className="w-14 h-14 rounded-sm overflow-hidden border border-[#444932] bg-[#201f1f] flex-shrink-0">
@@ -219,11 +212,10 @@ const ClassTable = ({
                       {cls.title || "UNTITLED_CLASS"}
                     </h4>
                     <span
-                      className={`inline-block mt-1 px-1.5 py-0.5 text-[8px] font-bold border uppercase ${
-                        cls.status?.toLowerCase() === "approved"
+                      className={`inline-block mt-1 px-1.5 py-0.5 text-[8px] font-bold border uppercase ${cls.status?.toLowerCase() === "approved"
                           ? "bg-[#caf300]/10 border-[#caf300] text-[#caf300]"
                           : "bg-[#444932]/20 text-[#c5c9ac]"
-                      }`}
+                        }`}
                     >
                       {cls.status || "PENDING"}
                     </span>
@@ -234,30 +226,52 @@ const ClassTable = ({
                   SUBMITTED:{" "}
                   {cls.createdAt
                     ? new Date(cls.createdAt)
-                        .toISOString()
-                        .slice(0, 16)
-                        .replace("T", " ")
+                      .toISOString()
+                      .slice(0, 16)
+                      .replace("T", " ")
                     : "2026-06-25 12:00"}
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#444932]/40">
+                <div className="flex items-center gap-2 pt-2 border-t border-zinc-800/60">
                   <button
-                    onClick={() => onApproveHandler(cls._id)}
-                    className="w-full py-1.5 text-[10px] font-bold uppercase text-center border border-[#caf300] bg-[#caf300] text-black"
+                    onClick={() => handleAction(cls._id, "approved", cls.title)}
+                    disabled={cls.status?.toLowerCase() === "approved"}
+                    className={`flex-1 py-1.5 text-[10px] font-bold uppercase text-center border transition-all ${cls.status?.toLowerCase() === "approved"
+                        ? "border-neutral-800 text-neutral-600 cursor-not-allowed bg-transparent"
+                        : "border-[#caf300] bg-[#caf300] text-black hover:bg-transparent hover:text-[#caf300]"
+                      }`}
                   >
                     Approve
                   </button>
                   <button
-                    onClick={() => onRejectHandler(cls._id)}
-                    className="w-full py-1.5 text-[10px] font-bold uppercase text-center border border-[#f34500]/40 text-[#f34500]"
+                    onClick={() => handleAction(cls._id, "rejected", cls.title)}
+                    disabled={cls.status?.toLowerCase() === "rejected"}
+                    className={`flex-1 py-1.5 text-[10px] font-bold uppercase text-center border transition-all ${cls.status?.toLowerCase() === "rejected"
+                        ? "border-neutral-800 text-neutral-600 cursor-not-allowed bg-transparent"
+                        : "border-[#f34500]/40 text-[#f34500] hover:bg-[#f34500] hover:text-black"
+                      }`}
                   >
                     Reject
                   </button>
                   <button
-                    onClick={() => onDeleteHandler(cls._id)}
-                    className="w-full py-1.5 text-[10px] font-bold uppercase text-center border border-neutral-700 text-red-400"
+                    onClick={() => handleDelete(cls._id, cls.title)}
+                    className="p-1.5 border border-neutral-700 text-neutral-400 hover:text-red-500 hover:border-red-500 transition-colors flex-shrink-0 flex items-center justify-center"
+                    title="Delete Permanently"
                   >
-                    Delete
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                      />
+                    </svg>
                   </button>
                 </div>
               </motion.div>
@@ -271,7 +285,7 @@ const ClassTable = ({
           SHOWING {indexOfFirstItem + 1}-
           {Math.min(indexOfLastItem, totalRecords)} OF {totalRecords} RECORDS
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1 justify-center">
           <button
             onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
             disabled={currentPage === 1}
@@ -284,11 +298,10 @@ const ClassTable = ({
             <button
               key={idx + 1}
               onClick={() => setCurrentPage(idx + 1)}
-              className={`px-3 py-1 font-bold transition-all ${
-                currentPage === idx + 1
+              className={`px-3 py-1 font-bold transition-all ${currentPage === idx + 1
                   ? "bg-[#caf300] text-black border border-[#caf300]"
                   : "bg-[#201f1f] border border-[#444932] hover:border-[#caf300] text-white"
-              }`}
+                }`}
             >
               {idx + 1}
             </button>
