@@ -10,9 +10,9 @@ const ClassStats = ({ stats, filteredCount = 0 }) => {
   const rejectedCount = stats?.rejectedCount ?? 0;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 font-mono">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 font-mono">
       {/*  PENDING APPROVALS */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="border border-[#caf300]/20 bg-[#111111] p-5 border-l-4 border-l-[#caf300] shadow-[0_4px_20px_rgba(202,243,0,0.03)] hover:border-[#caf300]/40 transition-all duration-300 rounded-sm"
@@ -20,9 +20,9 @@ const ClassStats = ({ stats, filteredCount = 0 }) => {
         <p className="text-[10px] uppercase text-[#c5c9ac] tracking-widest font-semibold">Pending Approvals</p>
         <p className="text-3xl font-black text-[#caf300] mt-2 tracking-tight">{pendingCount}</p>
       </motion.div>
-      
+
       {/*  TOTAL LIVE CLASSES */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.05 }}
@@ -33,7 +33,7 @@ const ClassStats = ({ stats, filteredCount = 0 }) => {
       </motion.div>
 
       {/*  REJECTED REQUESTS */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1 }}
@@ -44,7 +44,7 @@ const ClassStats = ({ stats, filteredCount = 0 }) => {
       </motion.div>
 
       {/*  FILTERED RESULTS */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.15 }}
