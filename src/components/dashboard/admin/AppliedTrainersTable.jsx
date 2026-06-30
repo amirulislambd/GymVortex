@@ -49,13 +49,21 @@ export default function AppliedTrainersTable({ pendingTrainers }) {
 
   return (
     // No <Toaster /> here — keep only one <Toaster /> in your root layout
-    <div className="w-full bg-[#131313] border border-[#444932] overflow-hidden">
+    <div className="w-full bg-[#131313] md:border border-[#444932] overflow-hidden">
       {trainers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-6">
           {/* Icon */}
           <div className="w-16 h-16 border border-[#444932] flex items-center justify-center">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-              stroke="#444932" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#444932"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -88,45 +96,119 @@ export default function AppliedTrainersTable({ pendingTrainers }) {
           </div>
         </div>
       ) : (
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#2a2a2a]/80 border-b border-[#444932]">
-              <th className="px-6 py-4 text-[#d4ff00] font-mono text-[11px] uppercase">Applicant</th>
-              <th className="px-6 py-4 text-[#d4ff00] font-mono text-[11px] uppercase">Specialty</th>
-              <th className="px-6 py-4 text-[#d4ff00] font-mono text-[11px] uppercase">Experience</th>
-              <th className="px-6 py-4 text-[#d4ff00] font-mono text-[11px] uppercase text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#444932]">
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#2a2a2a]/80 border-b border-[#444932]">
+                  <th className="px-6 py-4 text-[#d4ff00] font-mono text-[11px] uppercase">
+                    Applicant
+                  </th>
+                  <th className="px-6 py-4 text-[#d4ff00] font-mono text-[11px] uppercase">
+                    Specialty
+                  </th>
+                  <th className="px-6 py-4 text-[#d4ff00] font-mono text-[11px] uppercase">
+                    Experience
+                  </th>
+                  <th className="px-6 py-4 text-[#d4ff00] font-mono text-[11px] uppercase text-right">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-[#444932]">
+                <AnimatePresence>
+                  {trainers.map((item) => (
+                    <motion.tr
+                      key={item._id}
+                      initial={{ opacity: 1 }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="hover:bg-[#d4ff00]/5 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-white">{item.fullName}</td>
+
+                      <td className="px-6 py-4 text-[#c5c9ac]">
+                        {item.specialty}
+                      </td>
+
+                      <td className="px-6 py-4 text-[#c5c9ac]">
+                        {item.experience} Years
+                      </td>
+
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => {
+                            setSelectedApplicant(item);
+                            setIsRejecting(false);
+                            setFeedback("");
+                          }}
+                          className="border border-[#d4ff00] text-[#d4ff00] px-4 py-1 text-xs uppercase hover:bg-[#d4ff00] hover:text-black transition"
+                        >
+                          Details
+                        </button>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden  space-y-4">
             <AnimatePresence>
               {trainers.map((item) => (
-                <motion.tr
+                <motion.div
                   key={item._id}
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="hover:bg-[#d4ff00]/5 transition-colors"
+                  className="bg-[#1a1a1a] border border-[#444932] rounded-xl p-4"
                 >
-                  <td className="px-6 py-4 text-white font-sans">{item.fullName}</td>
-                  <td className="px-6 py-4 text-[#c5c9ac] font-mono text-sm">{item.specialty}</td>
-                  <td className="px-6 py-4 text-[#c5c9ac] font-mono text-sm">{item.experience} Years</td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => {
-                        setSelectedApplicant(item);
-                        setIsRejecting(false);
-                        setFeedback("");
-                      }}
-                      className="border border-[#d4ff00] text-[#d4ff00] px-4 py-1 text-[10px] uppercase hover:bg-[#d4ff00] hover:text-black transition-all"
-                    >
-                      Details
-                    </button>
-                  </td>
-                </motion.tr>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-white font-semibold text-lg">
+                      {item.fullName}
+                    </h3>
+
+                    <span className="text-[10px] uppercase bg-[#d4ff00]/10 text-[#d4ff00] px-2 py-1 rounded-full">
+                      Pending
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-[#777] text-sm">Specialty</span>
+                      <span className="text-[#d4ff00] font-medium">
+                        {item.specialty}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-[#777] text-sm">Experience</span>
+                      <span className="text-white">
+                        {item.experience} Years
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setSelectedApplicant(item);
+                      setIsRejecting(false);
+                      setFeedback("");
+                    }}
+                    className="w-full mt-5 bg-[#d4ff00] text-black py-2.5 rounded-lg font-semibold hover:bg-[#b5e000] transition"
+                  >
+                    View Details
+                  </button>
+                </motion.div>
               ))}
             </AnimatePresence>
-          </tbody>
-        </table>
+          </div>
+        </>
       )}
 
       {/* Detail Modal */}
@@ -149,10 +231,30 @@ export default function AppliedTrainersTable({ pendingTrainers }) {
               </h3>
 
               <div className="grid grid-cols-2 gap-4 text-white text-sm font-mono mb-6">
-                <p>Name: <span className="text-[#c5c9ac]">{selectedApplicant.fullName}</span></p>
-                <p>Email: <span className="text-[#c5c9ac]">{selectedApplicant.userEmail}</span></p>
-                <p>Specialty: <span className="text-[#c5c9ac]">{selectedApplicant.specialty}</span></p>
-                <p>Experience: <span className="text-[#c5c9ac]">{selectedApplicant.experience} Years</span></p>
+                <p>
+                  Name:{" "}
+                  <span className="text-[#c5c9ac]">
+                    {selectedApplicant.fullName}
+                  </span>
+                </p>
+                <p>
+                  Email:{" "}
+                  <span className="text-[#c5c9ac]">
+                    {selectedApplicant.userEmail}
+                  </span>
+                </p>
+                <p>
+                  Specialty:{" "}
+                  <span className="text-[#c5c9ac]">
+                    {selectedApplicant.specialty}
+                  </span>
+                </p>
+                <p>
+                  Experience:{" "}
+                  <span className="text-[#c5c9ac]">
+                    {selectedApplicant.experience} Years
+                  </span>
+                </p>
               </div>
 
               <p className="text-white mb-4 text-sm font-mono border-l-2 border-[#d4ff00] pl-3">
@@ -184,7 +286,7 @@ export default function AppliedTrainersTable({ pendingTrainers }) {
                           selectedApplicant._id,
                           "approved",
                           selectedApplicant.userEmail,
-                          ""
+                          "",
                         )
                       }
                       className="flex-1 bg-[#d4ff00] text-black font-bold uppercase py-2 hover:bg-[#b5e000] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
@@ -207,7 +309,7 @@ export default function AppliedTrainersTable({ pendingTrainers }) {
                         selectedApplicant._id,
                         "rejected",
                         selectedApplicant.userEmail,
-                        feedback
+                        feedback,
                       )
                     }
                     className="flex-1 bg-red-600 text-white font-bold uppercase py-2 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"

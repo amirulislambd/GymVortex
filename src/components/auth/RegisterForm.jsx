@@ -120,10 +120,36 @@ const RegisterForm = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#131313] text-[#e5e2e1] font-sans flex items-center justify-center p-6 md:p-12">
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center lg:items-stretch">
+    <div
+      className="min-h-screen w-full text-[#e5e2e1] font-sans flex items-center justify-center p-6 md:p-12 bg-cover bg-center bg-no-repeat bg-blend-overlay bg-[#0a0a0a]/60 transition-all duration-300"
+      style={{
+        backgroundImage: `url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1920&auto=format&fit=crop')`,
+      }}
+    >
+      {/* ── Glowing Bordered Content Wrapper ── */}
+      <div className="relative w-full max-w-6xl">
+
+        {/* Sci-Fi Corner Bracket Accents */}
+        <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-[#caf300] z-10" />
+        <div className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-[#caf300] z-10" />
+        <div className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-[#caf300] z-10" />
+        <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-[#caf300] z-10" />
+
+        {/* Main border shell with glow */}
+        <div
+          className="border border-[#caf300]/25 backdrop-blur-[2px] p-6 md:p-8"
+          style={{
+            boxShadow: `
+              0 0 0 1px rgba(202,243,0,0.06),
+              0 0 40px rgba(202,243,0,0.07),
+              0 0 100px rgba(202,243,0,0.04),
+              inset 0 0 60px rgba(0,0,0,0.4)
+            `,
+          }}
+        >
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center lg:items-stretch">
         {/* ================= LEFT SIDE: BRANDING / HERO SECTION ================= */}
-        <div className="hidden md:flex lg:col-span-5 flex-col justify-between py-6 space-y-10">
+        <div className="hidden md:flex lg:col-span-5 flex-col justify-between py-6 space-y-10 drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
           <div>
             <h1 className="text-5xl font-black uppercase tracking-tighter text-[#caf300] leading-none mb-4">
               FORGE<span className="text-white">FIT</span>
@@ -190,7 +216,7 @@ const RegisterForm = () => {
 
         {/* ================= RIGHT SIDE: REGISTRATION FORM SECTION ================= */}
         <div className="col-span-1 lg:col-span-7">
-          <div className="w-full rounded-md border-t border-l border-white/5 bg-[#1c1b1b] p-8 md:p-10 relative overflow-hidden shadow-2xl">
+          <div className="w-full rounded-md border-t border-l border-white/5 bg-[#131313]/95 backdrop-blur-sm p-8 md:p-10 relative overflow-hidden shadow-2xl">
             {/* Card Header */}
             <div className="flex items-end justify-between border-b border-neutral-800/60 pb-6">
               <div>
@@ -211,7 +237,7 @@ const RegisterForm = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
               {/* Identity image upload widget */}
-              <div className="flex flex-col sm:flex-row items-center gap-5 p-4 bg-[#161515] border border-neutral-800 rounded-sm">
+              <div className="flex flex-col sm:flex-row items-center gap-5 p-4 bg-[#161515]/50 border border-neutral-800 rounded-sm">
                 <label
                   htmlFor="identity-image"
                   className="group relative h-20 w-20 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-neutral-700 bg-[#242323] transition-colors hover:border-[#caf300] flex items-center justify-center"
@@ -351,11 +377,10 @@ const RegisterForm = () => {
                     return (
                       <span
                         key={label}
-                        className={`border px-2 py-0.5 font-mono text-[9px] tracking-wider uppercase transition-colors rounded-none ${
-                          met
+                        className={`border px-2 py-0.5 font-mono text-[9px] tracking-wider uppercase transition-colors rounded-none ${met
                             ? "border-[#caf300] text-[#caf300]"
                             : "border-neutral-800 text-neutral-600"
-                        }`}
+                          }`}
                       >
                         {label}
                       </span>
@@ -388,7 +413,9 @@ const RegisterForm = () => {
             <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-[#caf300]/20"></div>
           </div>
         </div>
-      </div>
+        </div>
+        </div> {/* /border shell */}
+      </div> {/* /relative wrapper */}
     </div>
   );
 };

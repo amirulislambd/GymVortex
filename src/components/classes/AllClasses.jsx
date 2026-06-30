@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ClassCard from "./ClassCard";
 import { GetClasses } from "@/lib/api/getClasses";
-import VortexSpinner from "@/app/loading";
+import VortexSpinner from "@/components/shared/VortexSpinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Select, ListBox } from "@heroui/react";
 

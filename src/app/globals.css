@@ -21,3 +21,32 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #caf300;
 }
+
+/* ==========================================================
+   VortexSpinner Server-Safe CSS Animations
+========================================================== */
+
+@keyframes vortex-spin-cw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes vortex-spin-ccw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes vortex-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(0.97); }
+  50%       { opacity: 1;   transform: scale(1.02); }
+}
+
+@keyframes vortex-sweep {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(100vh); }
+}
+
+.vortex-spin-cw  { animation: vortex-spin-cw  5s linear infinite; }
+.vortex-spin-ccw { animation: vortex-spin-ccw 10s linear infinite; }
+.vortex-pulse    { animation: vortex-pulse     3s ease-in-out infinite; }
+.vortex-sweep    { animation: vortex-sweep     8s linear infinite; }
